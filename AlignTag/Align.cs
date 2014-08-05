@@ -99,7 +99,7 @@ namespace AlignTag
 
                 if (side == "Left" || side == "Right")
                 {
-                    upDir = -currentView.RightDirection;
+                    upDir = currentView.RightDirection;
                 }
                 else if (side == "Top" || side == "Bottom")
                 {
@@ -119,7 +119,7 @@ namespace AlignTag
                     {
                         if (headPoint.DotProduct(upDir) < maxDirLengh)
                         {
-                            maxDir = -upDir.Multiply(headPoint.DotProduct(upDir));
+                            maxDir = upDir.Multiply(headPoint.DotProduct(upDir));
                             maxDirLengh = headPoint.DotProduct(upDir);
                         }
                     }
@@ -254,8 +254,24 @@ namespace AlignTag
 
                 distributedTags = distributedTags.OrderBy(x => x.ProjectionLenght).ToList();
 
-                double totalLenght = distributedTags.First().ProjectionLenght - distributedTags.Last().ProjectionLenght;
+                double totalLenght = distributedTags.Last().ProjectionLenght - distributedTags.First().ProjectionLenght;
                 double spacing = totalLenght / (distributedTags.Count() - 1);
+
+                XYZ startingXYZ = distributedTags.First().ProjectionXYZ;
+
+                tx.Start("Distribute Tags");
+
+                int i = 0;
+
+                foreach (DistributedTag distribuedTag in distributedTags)
+                {
+                    Transform tr = Transform.CreateTranslation(startingXYZ + upDir.Multiply(i*spacing) - distribuedTag.ProjectionXYZ);
+                    distribuedTag.Tag.TagHeadPosition = tr.OfPoint(distribuedTag.Tag.TagHeadPosition);
+                    i++;
+                }
+
+                tx.Commit();
+
             }
         }
     }
@@ -275,9 +291,17 @@ namespace AlignTag
             get { return _projectionLenght; }
         }
 
+        private XYZ _projectionXYZ;
+        public XYZ ProjectionXYZ
+        {
+            get { return _projectionXYZ; }
+        }
+
         public DistributedTag(IndependentTag tag, XYZ upDir)
         {
+            _tag = tag;
             _projectionLenght = upDir.DotProduct(tag.TagHeadPosition);
+            _projectionXYZ = upDir.Multiply(_projectionLenght);
         }
     }
 }

@@ -99,6 +99,8 @@ namespace AlignTag
             sbAlign.AddPushButton(alignRightButton);
             sbAlign.AddPushButton(alignTopButton);
             sbAlign.AddPushButton(alignBottomButton);
+            sbAlign.AddPushButton(distributeHorizontallyButton);
+            sbAlign.AddPushButton(distributeVerticallyButton);
 
         }
 
