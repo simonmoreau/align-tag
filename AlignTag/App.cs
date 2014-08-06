@@ -60,36 +60,36 @@ namespace AlignTag
             //Add Align Right Button
             PushButtonData alignRightButton = new PushButtonData("alignRightButton", "Align Right", DllPath, "AlignTag.AlignRight");
             alignRightButton.ToolTip = "Align Tags Right";
-            alignRightButton.LargeImage = RetriveImage("AlignTag.Resources.AlignLeftLarge.png");
-            alignRightButton.Image = RetriveImage("AlignTag.Resources.AlignLeftSmall.png");
+            alignRightButton.LargeImage = RetriveImage("AlignTag.Resources.AlignRightLarge.png");
+            alignRightButton.Image = RetriveImage("AlignTag.Resources.AlignRightSmall.png");
             alignRightButton.SetContextualHelp(help);
 
             //Add Align TOp Button
             PushButtonData alignTopButton = new PushButtonData("alignTopButton", "Align Top", DllPath, "AlignTag.AlignTop");
             alignTopButton.ToolTip = "Align Tags Top";
-            alignTopButton.LargeImage = RetriveImage("AlignTag.Resources.AlignLeftLarge.png");
-            alignTopButton.Image = RetriveImage("AlignTag.Resources.AlignLeftSmall.png");
+            alignTopButton.LargeImage = RetriveImage("AlignTag.Resources.AlignTopLarge.png");
+            alignTopButton.Image = RetriveImage("AlignTag.Resources.AlignTopSmall.png");
             alignTopButton.SetContextualHelp(help);
 
             //Add Align bottom Button
             PushButtonData alignBottomButton = new PushButtonData("alignBottomButton", "Align Bottom", DllPath, "AlignTag.AlignBottom");
             alignBottomButton.ToolTip = "Align Tags Bottom";
-            alignBottomButton.LargeImage = RetriveImage("AlignTag.Resources.AlignLeftLarge.png");
-            alignBottomButton.Image = RetriveImage("AlignTag.Resources.AlignLeftSmall.png");
+            alignBottomButton.LargeImage = RetriveImage("AlignTag.Resources.AlignBottomLarge.png");
+            alignBottomButton.Image = RetriveImage("AlignTag.Resources.AlignBottomSmall.png");
             alignBottomButton.SetContextualHelp(help);
 
             //Add Distribute horizontally Button
-            PushButtonData distributeHorizontallyButton = new PushButtonData("distributeHorizontallyButton", "Distribute Horizontally", DllPath, "AlignTag.DistributeHorizontally");
+            PushButtonData distributeHorizontallyButton = new PushButtonData("distributeHorizontallyButton", "Distribute\nHorizontally", DllPath, "AlignTag.DistributeHorizontally");
             distributeHorizontallyButton.ToolTip = "Distribute Tags Horizontally";
-            distributeHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.AlignLeftLarge.png");
-            distributeHorizontallyButton.Image = RetriveImage("AlignTag.Resources.AlignLeftSmall.png");
+            distributeHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.DistributeHorizontallyLarge.png");
+            distributeHorizontallyButton.Image = RetriveImage("AlignTag.Resources.DistributeHorizontallySmall.png");
             distributeHorizontallyButton.SetContextualHelp(help);
 
             //Add Distribute vertically Button
-            PushButtonData distributeVerticallyButton = new PushButtonData("distributeVerticallyButton", "Distribute Vertically", DllPath, "AlignTag.DistributeVertically");
+            PushButtonData distributeVerticallyButton = new PushButtonData("distributeVerticallyButton", "Distribute\nVertically", DllPath, "AlignTag.DistributeVertically");
             distributeVerticallyButton.ToolTip = "Distribute Tags Vertically";
-            distributeVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.AlignLeftLarge.png");
-            distributeVerticallyButton.Image = RetriveImage("AlignTag.Resources.AlignLeftSmall.png");
+            distributeVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.DistributeVerticallyLarge.png");
+            distributeVerticallyButton.Image = RetriveImage("AlignTag.Resources.DistributeVerticallySmall.png");
             distributeVerticallyButton.SetContextualHelp(help);
 
             //Group align buttons

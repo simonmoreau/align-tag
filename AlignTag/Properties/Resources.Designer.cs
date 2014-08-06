@@ -61,6 +61,26 @@ namespace AlignTag.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AlignBottomLarge {
+            get {
+                object obj = ResourceManager.GetObject("AlignBottomLarge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AlignBottomSmall {
+            get {
+                object obj = ResourceManager.GetObject("AlignBottomSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] AlignHelp {
@@ -86,6 +106,86 @@ namespace AlignTag.Properties {
         internal static System.Drawing.Bitmap AlignLeftSmall {
             get {
                 object obj = ResourceManager.GetObject("AlignLeftSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AlignRightLarge {
+            get {
+                object obj = ResourceManager.GetObject("AlignRightLarge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AlignRightSmall {
+            get {
+                object obj = ResourceManager.GetObject("AlignRightSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AlignTopLarge {
+            get {
+                object obj = ResourceManager.GetObject("AlignTopLarge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AlignTopSmall {
+            get {
+                object obj = ResourceManager.GetObject("AlignTopSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DistributeHorizontallyLarge {
+            get {
+                object obj = ResourceManager.GetObject("DistributeHorizontallyLarge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DistributeHorizontallySmall {
+            get {
+                object obj = ResourceManager.GetObject("DistributeHorizontallySmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DistributeVerticallyLarge {
+            get {
+                object obj = ResourceManager.GetObject("DistributeVerticallyLarge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DistributeVerticallySmall {
+            get {
+                object obj = ResourceManager.GetObject("DistributeVerticallySmall", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
