@@ -41,7 +41,7 @@ namespace AlignTag
             string DllPath = Assembly.GetExecutingAssembly().Location;
 
             //Create contextual help
-            ContextualHelp help = CreateContextualHelp("AlignHelp");
+            ContextualHelp help = CreateContextualHelp("AlignHelp.chm");
 
 
             //Create align left button
@@ -140,7 +140,6 @@ namespace AlignTag
                 //Extract the english documentation
             
             Tools.ExtractRessource("AlignTag.Resources.AlignHelp.chm", HelpPath);
-
 
             return new ContextualHelp(ContextualHelpType.ChmFile, HelpPath);
         }
