@@ -129,19 +129,32 @@ namespace AlignTag
 
         private static ContextualHelp CreateContextualHelp(string helpFile)
         {
-            string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            //Get the english documentation
-            string HelpName = helpFile;
+            FileInfo dllFileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
 
-            string HelpPath = Path.Combine(dir, HelpName);
+            string helpFilePath = Path.Combine(dllFileInfo.Directory.Parent.FullName, "help.htm");
 
-            //if the help file does not exist, extract it in the HelpDirectory
+            FileInfo helpFileInfo = new FileInfo(helpFilePath);
+            if (helpFileInfo.Exists)
+            {
+                return new ContextualHelp(ContextualHelpType.Url, helpFilePath);
+            }
+            else
+            {
+                string dirPath = dllFileInfo.Directory.FullName;
+                //Get the english documentation
+                string HelpName = helpFile;
+
+                string HelpPath = Path.Combine(dirPath, HelpName);
+
+                //if the help file does not exist, extract it in the HelpDirectory
                 //Extract the english documentation
-            
-            Tools.ExtractRessource("AlignTag.Resources.AlignHelp.chm", HelpPath);
 
-            return new ContextualHelp(ContextualHelpType.ChmFile, HelpPath);
+                Tools.ExtractRessource("AlignTag.Resources.AlignHelp.chm", HelpPath);
+
+                return new ContextualHelp(ContextualHelpType.ChmFile, HelpPath);
+            }
+
         }
     }
 }
