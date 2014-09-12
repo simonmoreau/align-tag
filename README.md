@@ -1,12 +1,15 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+The Align tool allows you to align or distribute selected tags along the axis you specify.
+ 
+The Align plug-in for Autodesk® Revit® can help to save time while producing complex drawings with large sets of annotation.
+ 
+Just select a few tags and the Align tool will sort them for you.
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* The entire source code of the Align Revit Plug-In can be found here. Feel free to use it for  whatever you want.
+* VErsion 1.0.0
 
 ### How do I get set up? ###
 
