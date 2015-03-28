@@ -67,13 +67,15 @@ namespace AlignTag
         {
             // Get the element selection of current document.
             Selection selection = UIDoc.Selection;
-            ElementSet collection = selection.Elements;
+            ICollection<ElementId> ids = selection.GetElementIds();
 
             List<IndependentTag> tags = new List<IndependentTag>();
 
 
-            foreach (Element e in collection)
+            foreach (ElementId id in ids)
             {
+                Element e = UIDoc.Document.GetElement(id);
+
                 IndependentTag tag = e as IndependentTag;
 
                 if (tag != null)
