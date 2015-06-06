@@ -92,6 +92,13 @@ namespace AlignTag
             distributeVerticallyButton.Image = RetriveImage("AlignTag.Resources.DistributeVerticallySmall.png");
             distributeVerticallyButton.SetContextualHelp(help);
 
+            //Add Distribute vertically Button
+            PushButtonData arrangeButton = new PushButtonData("ArrangeButton", "Arrange\nTags", DllPath, "AlignTag.Arrange");
+            arrangeButton.ToolTip = "Arrange Tags around the view";
+            arrangeButton.LargeImage = RetriveImage("AlignTag.Resources.DistributeVerticallyLarge.png");
+            arrangeButton.Image = RetriveImage("AlignTag.Resources.DistributeVerticallySmall.png");
+            arrangeButton.SetContextualHelp(help);
+
             //Group align buttons
             SplitButtonData sbAlignData = new SplitButtonData("alignSplitButton", "Align Tags");
             SplitButton sbAlign = bim42Panel.AddItem(sbAlignData) as SplitButton;
@@ -101,6 +108,7 @@ namespace AlignTag
             sbAlign.AddPushButton(alignBottomButton);
             sbAlign.AddPushButton(distributeHorizontallyButton);
             sbAlign.AddPushButton(distributeVerticallyButton);
+            sbAlign.AddPushButton(arrangeButton);
 
         }
 

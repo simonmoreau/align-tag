@@ -76,4 +76,15 @@ namespace AlignTag
             return align.DistributeElements(commandData, ref message, "Vertically");
         }
     }
+
+    //[Transaction(TransactionMode.Manual)]
+    //class Arrange : IExternalCommand
+    //{
+    //    public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+    //    {
+    //        Arrange arrange = new Arrange();
+
+    //        return arrange.ArrangeElements(commandData, ref message);
+    //    }
+    //}
 }
