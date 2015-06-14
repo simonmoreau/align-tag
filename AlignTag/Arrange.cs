@@ -63,9 +63,7 @@ namespace AlignTag
         private void ArrangeTag(UIDocument uidoc, Transaction tx)
         {
             Document doc = uidoc.Document;
-            //Get view center
             View activeView = doc.ActiveView;
-            XYZ viewCenter = activeView.Origin;
 
             //Retrive all tag in active view
             List<IndependentTag> tags =
@@ -73,48 +71,48 @@ namespace AlignTag
                 OfClass(typeof(IndependentTag)).WhereElementIsNotElementType().ToElements()
                 .ToList().Cast<IndependentTag>().ToList();
 
+
             //Create a list of location points for tag headers
-            List<XYZ> headersPoints = CreateTagPositionPoints(activeView);
+            List<XYZ> headersPoints = CreateTagPositionPoints(activeView, tags);
+
+            //Create a list of TagLeader to sort them
+            List<TagLeader> tagLeaders = new List<TagLeader>();
 
             tx.Start("Arrange Tags");
 
             foreach (IndependentTag tag in tags)
             {
+                
                 if (tag.HasLeader)
                 {
-
-                    Element taggedElement;
-                    if (tag.TaggedElementId.HostElementId == ElementId.InvalidElementId)
-                    {
-                        RevitLinkInstance linkInstance = doc.GetElement(tag.TaggedElementId.LinkInstanceId) as RevitLinkInstance;
-                        Document linkedDocument = linkInstance.GetLinkDocument();
-
-                        taggedElement = linkedDocument.GetElement(tag.TaggedElementId.LinkedElementId);
-                    }
-                    else
-                    {
-                        taggedElement = doc.GetElement(tag.TaggedElementId.HostElementId);
-                    }
-
-                    
-
-                    BoundingBoxXYZ bbox = taggedElement.get_BoundingBox(activeView);
-
-                    //XYZ leaderEnd = tag.LeaderEnd;
-                    XYZ leaderEnd = (bbox.Max + bbox.Min) / 2;
+                    TagLeader tagLeader = new TagLeader(tag, doc);
+                    tagLeaders.Add(tagLeader);
 
                     //Find nearest point
-                    XYZ nearestPoint = FindNearestPoint(headersPoints, leaderEnd);
-                    tag.TagHeadPosition = nearestPoint;
+                    XYZ nearestPoint = FindNearestPoint(headersPoints, tagLeader.LeaderStart);                    
+                    tagLeader.Tag.TagHeadPosition = nearestPoint;
 
                     //remove this point from the list
                     headersPoints.Remove(nearestPoint);
-                    //int rank = headersPoints.IndexOf(nearestPoint);
-
-                    //tag.TagHeadPosition = viewCenter + 20 * (leaderEnd - viewCenter);
                 }
+            }
 
-
+            foreach (TagLeader tagLeader in tagLeaders)
+            {
+                foreach (TagLeader secondTagLeader in tagLeaders)
+                {
+                    if (secondTagLeader != tagLeader)
+                    {
+                        //Check if leader cross
+                        if (tagLeader.Leader.Intersect(secondTagLeader.Leader) == SetComparisonResult.Overlap)
+                        {
+                            //Invert two tag
+                            XYZ leaderEnd = tagLeader.Tag.TagHeadPosition;
+                            tagLeader.Tag.TagHeadPosition = secondTagLeader.Tag.TagHeadPosition;
+                            secondTagLeader.Tag.TagHeadPosition = leaderEnd;
+                        }
+                    }
+                }
             }
 
             tx.Commit();
@@ -136,16 +134,33 @@ namespace AlignTag
                     nearestDistance = basePoint.DistanceTo(point);
                 }
             }
-
-
             return nearestPoint;
         }
 
-        private List<XYZ> CreateTagPositionPoints(View activeView)
+        private List<XYZ> CreateTagPositionPoints(View activeView, List<IndependentTag> tags)
         {
             if (!activeView.CropBoxActive)
             {
                 throw new ErrorMessageException("Please set a crop box to the view");
+            }
+
+            //Get largest tag dimension
+            double tagHeight = 0;
+            double tagWidth = 0;
+            foreach (IndependentTag tag in tags)
+            {
+                BoundingBoxXYZ tagBox = tag.get_BoundingBox(activeView);
+                //get largest width
+                if (Math.Abs(tagBox.Max.X - tagBox.Min.X)>tagWidth )
+                {
+                    tagWidth = Math.Abs(tagBox.Max.X - tagBox.Min.X);
+                }
+
+                //get largest height
+                if (Math.Abs(tagBox.Max.Y - tagBox.Min.Y) > tagHeight)
+                {
+                    tagHeight = Math.Abs(tagBox.Max.Y - tagBox.Min.Y);
+                }
             }
 
             BoundingBoxXYZ bbox = activeView.CropBox;
@@ -168,6 +183,79 @@ namespace AlignTag
             return points;
 
         }
+    }
 
+    class TagLeader
+    {
+        private Document _doc;
+        private View _currentView;
+        
+        public TagLeader(IndependentTag tag, Document doc)
+        {
+            _doc = doc;
+            _currentView = _doc.GetElement(tag.OwnerViewId) as View;
+            _tag = tag;
+            GetTaggedElement();
+            GetLeaderStart();
+        }
+
+        private Element _taggedElement;
+        public Element TaggedElement
+        {
+            get { return _taggedElement; }
+        }
+
+        private IndependentTag _tag;
+        public IndependentTag Tag
+        {
+            get { return _tag; }
+        }
+
+        private Line _leader;
+        public Line Leader
+        {
+            get 
+            {
+                _leader = Line.CreateBound(_leaderStart, _tag.TagHeadPosition);
+                return _leader; 
+            }
+        }
+
+        private XYZ _leaderStart;
+        public XYZ LeaderStart
+        {
+            get { return _leaderStart; }
+        }
+
+        private void GetTaggedElement()
+        {
+            if (_tag.TaggedElementId.HostElementId == ElementId.InvalidElementId)
+            {
+                RevitLinkInstance linkInstance = _doc.GetElement(_tag.TaggedElementId.LinkInstanceId) as RevitLinkInstance;
+                Document linkedDocument = linkInstance.GetLinkDocument();
+
+                _taggedElement = linkedDocument.GetElement(_tag.TaggedElementId.LinkedElementId);
+            }
+            else
+            {
+                _taggedElement = _doc.GetElement(_tag.TaggedElementId.HostElementId);
+            }
+        }
+
+        private void GetLeaderStart()
+        {
+            BoundingBoxXYZ bbox = _taggedElement.get_BoundingBox(_currentView);
+            BoundingBoxXYZ viewBox = _currentView.CropBox;
+
+            //Retrive leader end
+            XYZ leaderStart = (bbox.Max + bbox.Min) / 2;
+
+            //Get leader end in view reference
+            _leaderStart = viewBox.Transform.Inverse.OfPoint(leaderStart);
+            _leaderStart = new XYZ(_leaderStart.X, _leaderStart.Y, 0);
+
+            //Get leader end in global reference
+            _leaderStart = viewBox.Transform.OfPoint(_leaderStart);
+        }
     }
 }
