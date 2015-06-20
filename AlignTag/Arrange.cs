@@ -16,48 +16,56 @@ namespace AlignTag
         {
             UIDocument UIdoc = commandData.Application.ActiveUIDocument;
             Document doc = UIdoc.Document;
-
-            using (Transaction tx = new Transaction(doc))
+            using (TransactionGroup transGroup = new TransactionGroup(doc))
             {
-                try
+
+                using (Transaction tx = new Transaction(doc))
                 {
-                    // Add Your Code Here
-                    ArrangeTag(UIdoc, tx);
-                    // Return Success
-                    return Result.Succeeded;
+                    try
+                    {
+                        transGroup.Start("Transaction Group");
+                        // Add Your Code Here
+                        ArrangeTag(UIdoc, tx);
+                        transGroup.Assimilate();
+                        // Return Success
+                        return Result.Succeeded;
+
+                    }
+
+                    catch (Autodesk.Revit.Exceptions.OperationCanceledException exceptionCanceled)
+                    {
+                        message = exceptionCanceled.Message;
+                        if (tx.HasStarted())
+                        {
+                            tx.RollBack();
+                        }
+                        return Autodesk.Revit.UI.Result.Cancelled;
+                    }
+                    catch (ErrorMessageException errorEx)
+                    {
+                        // checked exception need to show in error messagebox
+                        message = errorEx.Message;
+                        if (tx.HasStarted())
+                        {
+                            tx.RollBack();
+                        }
+                        return Autodesk.Revit.UI.Result.Failed;
+                    }
+                    catch (Exception ex)
+                    {
+                        // unchecked exception cause command failed
+                        message = ex.Message;
+                        //Trace.WriteLine(ex.ToString());
+                        if (tx.HasStarted())
+                        {
+                            tx.RollBack();
+                        }
+                        return Autodesk.Revit.UI.Result.Failed;
+                    }
                 }
 
-                catch (Autodesk.Revit.Exceptions.OperationCanceledException exceptionCanceled)
-                {
-                    message = exceptionCanceled.Message;
-                    if (tx.HasStarted())
-                    {
-                        tx.RollBack();
-                    }
-                    return Autodesk.Revit.UI.Result.Cancelled;
-                }
-                catch (ErrorMessageException errorEx)
-                {
-                    // checked exception need to show in error messagebox
-                    message = errorEx.Message;
-                    if (tx.HasStarted())
-                    {
-                        tx.RollBack();
-                    }
-                    return Autodesk.Revit.UI.Result.Failed;
-                }
-                catch (Exception ex)
-                {
-                    // unchecked exception cause command failed
-                    message = ex.Message;
-                    //Trace.WriteLine(ex.ToString());
-                    if (tx.HasStarted())
-                    {
-                        tx.RollBack();
-                    }
-                    return Autodesk.Revit.UI.Result.Failed;
-                }
             }
+
         }
 
         private void ArrangeTag(UIDocument uidoc, Transaction tx)
@@ -65,31 +73,34 @@ namespace AlignTag
             Document doc = uidoc.Document;
             View activeView = doc.ActiveView;
 
-            //Retrive all tag in active view
-            List<IndependentTag> tags =
-                new FilteredElementCollector(doc, activeView.Id).
-                OfClass(typeof(IndependentTag)).WhereElementIsNotElementType().ToElements()
-                .ToList().Cast<IndependentTag>().ToList();
+            ////Retrive all tag in active view
+            //List<IndependentTag> tags =
+            //    new FilteredElementCollector(doc, activeView.Id).
+            //    OfClass(typeof(IndependentTag)).WhereElementIsNotElementType().ToElements()
+            //    .ToList().Cast<IndependentTag>().ToList();
 
+            IEnumerable<IndependentTag> tags = from elem in new FilteredElementCollector(doc, activeView.Id).OfClass(typeof(IndependentTag)).WhereElementIsNotElementType()
+                                               let type = elem as IndependentTag
+                                               where type.HasLeader == true
+                                               select type;
+
+            tx.Start("Arrange Tags");
 
             //Create a list of location points for tag headers
-            List<XYZ> headersPoints = CreateTagPositionPoints(activeView, tags);
+            List<XYZ> headersPoints = CreateTagPositionPoints(activeView, tags, tx);
 
             //Create a list of TagLeader to sort them
             List<TagLeader> tagLeaders = new List<TagLeader>();
 
-            tx.Start("Arrange Tags");
-
             foreach (IndependentTag tag in tags)
             {
-                
-                if (tag.HasLeader)
+                if (tag.HasLeader == true)
                 {
                     TagLeader tagLeader = new TagLeader(tag, doc);
                     tagLeaders.Add(tagLeader);
 
                     //Find nearest point
-                    XYZ nearestPoint = FindNearestPoint(headersPoints, tagLeader.LeaderStart);                    
+                    XYZ nearestPoint = FindNearestPoint(headersPoints, tagLeader.LeaderStart);
                     tagLeader.Tag.TagHeadPosition = nearestPoint;
 
                     //remove this point from the list
@@ -97,6 +108,36 @@ namespace AlignTag
                 }
             }
 
+            SortTag(tagLeaders);
+            CreateElbow(tagLeaders, activeView);
+
+
+            tx.Commit();
+
+        }
+
+        private void CreateElbow(List<TagLeader> tagLeaders, View activeView)
+        {
+            BoundingBoxXYZ bbox = activeView.CropBox;
+            Transform viewTransform = bbox.Transform;
+
+            foreach (TagLeader tagLeader in tagLeaders)
+            {
+                XYZ A = viewTransform.Inverse.OfPoint(tagLeader.Tag.TagHeadPosition);
+                XYZ B = viewTransform.Inverse.OfPoint(tagLeader.LeaderStart);
+                XYZ AB = B - A;
+                double mult = AB.X * AB.Y;
+                mult = mult / Math.Abs(mult);
+                XYZ delta = new XYZ(AB.X - AB.Y * Math.Tan(mult * Math.PI / 4), 0, 0);
+                XYZ elbowPosition = A + delta;
+                elbowPosition = viewTransform.OfPoint(elbowPosition);
+
+                tagLeader.Tag.LeaderElbow = elbowPosition;
+            }
+        }
+
+        private void SortTag(List<TagLeader> tagLeaders)
+        {
             foreach (TagLeader tagLeader in tagLeaders)
             {
                 foreach (TagLeader secondTagLeader in tagLeaders)
@@ -106,7 +147,7 @@ namespace AlignTag
                         //Check if leader cross
                         if (tagLeader.Leader.Intersect(secondTagLeader.Leader) == SetComparisonResult.Overlap)
                         {
-                            //Invert two tag
+                            //Invert two tags
                             XYZ leaderEnd = tagLeader.Tag.TagHeadPosition;
                             tagLeader.Tag.TagHeadPosition = secondTagLeader.Tag.TagHeadPosition;
                             secondTagLeader.Tag.TagHeadPosition = leaderEnd;
@@ -114,9 +155,6 @@ namespace AlignTag
                     }
                 }
             }
-
-            tx.Commit();
-
         }
 
         private XYZ FindNearestPoint(List<XYZ> points, XYZ basePoint)
@@ -137,41 +175,72 @@ namespace AlignTag
             return nearestPoint;
         }
 
-        private List<XYZ> CreateTagPositionPoints(View activeView, List<IndependentTag> tags)
+
+
+        private List<XYZ> CreateTagPositionPoints(View activeView, IEnumerable<IndependentTag> tags, Transaction tx)
         {
             if (!activeView.CropBoxActive)
             {
                 throw new ErrorMessageException("Please set a crop box to the view");
             }
 
+            ////Remove all leader
+            foreach (IndependentTag tag in tags)
+            {
+                tag.LeaderEndCondition = LeaderEndCondition.Free;
+                tag.LeaderEnd = tag.TagHeadPosition;
+                //tag.HasLeader = false;
+            }
+
+            tx.Commit();
+            tx.Start("Follow up");
+
+            BoundingBoxXYZ bbox = activeView.CropBox;
+            XYZ origin = activeView.Origin;
+            Transform viewTransform = bbox.Transform;
+
+
+
             //Get largest tag dimension
             double tagHeight = 0;
             double tagWidth = 0;
             foreach (IndependentTag tag in tags)
             {
+
                 BoundingBoxXYZ tagBox = tag.get_BoundingBox(activeView);
+                BoundingBoxXYZ transformedTagBox = new BoundingBoxXYZ();
+                transformedTagBox.Min = viewTransform.Inverse.OfPoint(tagBox.Min);
+                transformedTagBox.Max = viewTransform.Inverse.OfPoint(tagBox.Max);
+
                 //get largest width
-                if (Math.Abs(tagBox.Max.X - tagBox.Min.X)>tagWidth )
+                if (Math.Abs(transformedTagBox.Max.X - transformedTagBox.Min.X) > tagWidth)
                 {
-                    tagWidth = Math.Abs(tagBox.Max.X - tagBox.Min.X);
+                    tagWidth = Math.Abs(transformedTagBox.Max.X - transformedTagBox.Min.X);
                 }
 
                 //get largest height
-                if (Math.Abs(tagBox.Max.Y - tagBox.Min.Y) > tagHeight)
+                if (Math.Abs(transformedTagBox.Max.Y - transformedTagBox.Min.Y) > tagHeight)
                 {
-                    tagHeight = Math.Abs(tagBox.Max.Y - tagBox.Min.Y);
+                    tagHeight = Math.Abs(transformedTagBox.Max.Y - transformedTagBox.Min.Y);
                 }
+
             }
 
-            BoundingBoxXYZ bbox = activeView.CropBox;
-            XYZ origin = activeView.Origin;
-            Transform viewTransform = bbox.Transform;
-            
+            //replace all leader
+            foreach (IndependentTag tag in tags)
+            {
+                //tag.HasLeader = true;
+                tag.LeaderEndCondition = LeaderEndCondition.Attached;
+            }
+
+
             List<XYZ> points = new List<XYZ>();
-            double step = (bbox.Max.Y - bbox.Min.Y) / 10;
+            double step = tagHeight * 1.5;
+            //double step = (bbox.Max.Y - bbox.Min.Y) / 20;
+            int max = (int)Math.Round((bbox.Max.Y - bbox.Min.Y) / (2 * step));
 
             //create sides points
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < max; i++)
             {
                 //Add left point
                 points.Add(viewTransform.OfPoint(new XYZ(bbox.Min.X, step * i, 0)));
@@ -189,7 +258,7 @@ namespace AlignTag
     {
         private Document _doc;
         private View _currentView;
-        
+
         public TagLeader(IndependentTag tag, Document doc)
         {
             _doc = doc;
@@ -197,6 +266,7 @@ namespace AlignTag
             _tag = tag;
             GetTaggedElement();
             GetLeaderStart();
+
         }
 
         private Element _taggedElement;
@@ -214,10 +284,27 @@ namespace AlignTag
         private Line _leader;
         public Line Leader
         {
-            get 
+            get
             {
                 _leader = Line.CreateBound(_leaderStart, _tag.TagHeadPosition);
-                return _leader; 
+                return _leader;
+            }
+        }
+
+        private XYZ _elbow;
+        public XYZ Elbow
+        {
+            get
+            {
+                Transform viewTransform = _currentView.CropBox.Transform;
+                XYZ A = viewTransform.Inverse.OfPoint(_tag.TagHeadPosition);
+                XYZ B = viewTransform.Inverse.OfPoint(_leaderStart);
+                XYZ AB = B - A;
+                double mult = AB.X * AB.Y;
+                mult = mult / Math.Abs(mult);
+                XYZ delta = new XYZ(AB.X - AB.Y * Math.Tan(mult * Math.PI / 4), 0, 0);
+                _elbow = viewTransform.OfPoint(A + delta);
+                return _elbow;
             }
         }
 
