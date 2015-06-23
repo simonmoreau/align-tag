@@ -23,7 +23,7 @@ namespace AlignTag
                 {
                     try
                     {
-                        transGroup.Start("Transaction Group");
+                        transGroup.Start("Arrange Tags");
                         // Add Your Code Here
                         ArrangeTag(UIdoc, tx);
                         transGroup.Assimilate();
@@ -96,35 +96,89 @@ namespace AlignTag
             tx.Commit();
             tx.Start("Arrange Tags");
 
-            //Create a list of TagLeader
-            List<TagLeader> tagLeaders = new List<TagLeader>();
+            //Create two lists of TagLeader
+            List<TagLeader> leftTagLeaders = new List<TagLeader>();
+            List<TagLeader> rightTagLeaders = new List<TagLeader>();
+
             foreach (IndependentTag tag in tags)
             {
-                tagLeaders.Add(new TagLeader(tag, doc));
+                TagLeader currentTag = new TagLeader(tag, doc);
+                if (currentTag.Side == ViewSides.Left)
+                {
+                    leftTagLeaders.Add(currentTag);
+                }
+                else
+                {
+                    rightTagLeaders.Add(currentTag);
+                }
             }
 
-            //Create a list of location points for tag headers
-            List<XYZ> tagHeadPoints = CreateTagPositionPoints(activeView,tagLeaders);
+            //Create a list of potential location points for tag headers
+            List<XYZ> leftTagHeadPoints = CreateTagPositionPoints(activeView, leftTagLeaders, ViewSides.Left);
+            List<XYZ> rightTagHeadPoints = CreateTagPositionPoints(activeView, rightTagLeaders, ViewSides.Right);
 
-            //place TagLeader
-            foreach (TagLeader tag in tagLeaders)
-            {
-                //Find nearest point
-                XYZ nearestPoint = FindNearestPoint(tagHeadPoints, tag.TagHeadPosition);
-                tag.TagHeadPosition = nearestPoint;
+            //Sort tag by Y position
+            leftTagLeaders = leftTagLeaders.OrderBy(x => x.LeaderEnd.X).ToList();
+            leftTagLeaders = leftTagLeaders.OrderBy(x => x.LeaderEnd.Y).ToList();
 
-                //remove this point from the list
-                tagHeadPoints.Remove(nearestPoint);
-            }
+            //place and sort
+            PlaceAndSort(leftTagHeadPoints, leftTagLeaders);
 
-            //replace all leaders before commiting
-            foreach (TagLeader tag in tagLeaders)
-            {
-                tag.UpdateTagPosition();
-            }
+
+            //Sort tag by Y position
+            rightTagLeaders = rightTagLeaders.OrderByDescending(x => x.LeaderEnd.X).ToList();
+            rightTagLeaders = rightTagLeaders.OrderBy(x => x.LeaderEnd.Y).ToList();
+
+            //place and sort
+            PlaceAndSort(rightTagHeadPoints, rightTagLeaders);
 
             tx.Commit();
 
+        }
+
+        private void PlaceAndSort(List<XYZ> positionPoints,List<TagLeader> tags)
+        {
+            //place TagLeader
+            foreach (TagLeader tag in tags)
+            {
+                XYZ nearestPoint = FindNearestPoint(positionPoints, tag.TagCenter);
+                tag.TagCenter = nearestPoint;
+
+                //remove this point from the list
+                positionPoints.Remove(nearestPoint);
+            }
+
+            //unCross leaders (2 times)
+            UnCross(tags);
+            UnCross(tags);
+
+            //update their position
+            foreach (TagLeader tag in tags)
+            {
+                tag.UpdateTagPosition();
+            }
+        }
+
+        private void UnCross(List<TagLeader> tags)
+        {
+            foreach (TagLeader tag in tags)
+            {
+                foreach (TagLeader otherTag in tags)
+                {
+                    if (tag != otherTag)
+                    {
+                        if (tag.BaseLine.Intersect(otherTag.BaseLine) == SetComparisonResult.Overlap
+                            || tag.BaseLine.Intersect(otherTag.EndLine) == SetComparisonResult.Overlap
+                            || tag.EndLine.Intersect(otherTag.BaseLine) == SetComparisonResult.Overlap
+                            || tag.EndLine.Intersect(otherTag.EndLine) == SetComparisonResult.Overlap)
+                        {
+                            XYZ newPosition = tag.TagCenter;
+                            tag.TagCenter = otherTag.TagCenter;
+                            otherTag.TagCenter = newPosition;
+                        }
+                    }
+                }
+            }
         }
 
         private XYZ FindNearestPoint(List<XYZ> points, XYZ basePoint)
@@ -145,28 +199,40 @@ namespace AlignTag
             return nearestPoint;
         }
 
-        private List<XYZ> CreateTagPositionPoints(View activeView, List<TagLeader> tagLeaders)
+        private List<XYZ> CreateTagPositionPoints(View activeView, List<TagLeader> tagLeaders, ViewSides side)
         {
+            List<XYZ> points = new List<XYZ>();
+
             BoundingBoxXYZ bbox = activeView.CropBox;
 
-            //Get largest tag dimension
-            double tagHeight = tagLeaders.Max(x => x.TagHeight);
-            double tagWidth = tagLeaders.Max(x => x.TagWidth);
-
-            List<XYZ> points = new List<XYZ>();
-            double step = tagHeight * 1.5;
-            //double step = (bbox.Max.Y - bbox.Min.Y) / 20;
-            int max = (int)Math.Round((bbox.Max.Y - bbox.Min.Y) / (2 * step));
-
-            //create sides points
-            for (int i = 0; i < max; i++)
+            if (tagLeaders.Count != 0)
             {
-                //Add left point
-                points.Add(new XYZ(bbox.Min.X, step * i, 0));
+                //Get largest tag dimension
+                double tagHeight = tagLeaders.Max(x => x.TagHeight);
+                double tagWidth = tagLeaders.Max(x => x.TagWidth);
 
-                //Add right point
-                points.Add(new XYZ(bbox.Max.X, step * i, 0));
+                double step = tagHeight*1.2;
+                //double step = (bbox.Max.Y - bbox.Min.Y) / 20;
+                int max = (int)Math.Round((bbox.Max.Y - bbox.Min.Y) / step);
+                XYZ baseRight = new XYZ(bbox.Max.X, bbox.Min.Y, 0);
+                XYZ baseLeft = new XYZ(bbox.Min.X, bbox.Min.Y, 0);
+
+                //create sides points
+                for (int i = max*2; i > 0; i--)
+                {
+                    if (side == ViewSides.Left)
+                    {
+                        //Add left point
+                        points.Add(baseLeft + new XYZ(0, step * i, 0));
+                    }
+                    else
+                    {
+                        //Add right point
+                        points.Add(baseRight + new XYZ(0, step * i, 0));
+                    }
+                }
             }
+
 
             return points;
         }
@@ -193,14 +259,35 @@ namespace AlignTag
         }
 
         private XYZ _tagHeadPosition;
-        public XYZ TagHeadPosition
+        private XYZ _headOffset;
+
+        private XYZ _tagCenter;
+        public XYZ TagCenter
         {
-            get { return _tagHeadPosition; }
-            set 
+            get { return _tagCenter; }
+            set
             {
-                _tagHeadPosition = value; 
-                UpdateElbowPosition();
+                _tagCenter = value;
+                UpdateLeaderPosition();
             }
+        }
+
+        private Line _endLine;
+        public Line EndLine
+        {
+            get { return _endLine; }
+        }
+
+        private Line _baseLine;
+        public Line BaseLine
+        {
+            get { return _baseLine; }
+        }
+
+        private ViewSides _side;
+        public ViewSides Side
+        {
+            get { return _side; }
         }
 
         private XYZ _elbowPosition;
@@ -209,14 +296,32 @@ namespace AlignTag
             get { return _elbowPosition; }
         }
 
-        private void UpdateElbowPosition()
+        private void UpdateLeaderPosition()
         {
-                //Update elbow position
-                XYZ AB = _leaderEnd - _tagHeadPosition;
-                double mult = AB.X * AB.Y;
-                mult = mult / Math.Abs(mult);
-                XYZ delta = new XYZ(AB.X - AB.Y * Math.Tan(mult * Math.PI / 4), 0, 0);
-                _elbowPosition = _tagHeadPosition + delta;
+            //Update elbow position
+            XYZ AB = _leaderEnd - _tagCenter;
+            double mult = AB.X * AB.Y;
+            mult = mult / Math.Abs(mult);
+            XYZ delta = new XYZ(AB.X - AB.Y * Math.Tan(mult * Math.PI / 4), 0, 0);
+            _elbowPosition = _tagCenter + delta;
+
+            //Update lines
+            if (_leaderEnd.DistanceTo(_elbowPosition)> _doc.Application.ShortCurveTolerance)
+            {
+                _endLine = Line.CreateBound(_leaderEnd, _elbowPosition);
+            }
+            else
+            {
+                _endLine = Line.CreateBound(new XYZ(0, 0, 0), new XYZ(0, 0, 1));
+            }
+            if (_elbowPosition.DistanceTo(_tagCenter) > _doc.Application.ShortCurveTolerance)
+            {
+                _baseLine = Line.CreateBound(_elbowPosition, _tagCenter);
+            }
+            else
+            {
+                _baseLine = Line.CreateBound(new XYZ(0, 0, 0), new XYZ(0, 0, 1));
+            }
         }
 
         private XYZ _leaderEnd;
@@ -262,6 +367,9 @@ namespace AlignTag
 
             _tagHeight = viewBox.Transform.Inverse.OfPoint(bbox.Max).Y - viewBox.Transform.Inverse.OfPoint(bbox.Min).Y;
             _tagWidth = viewBox.Transform.Inverse.OfPoint(bbox.Max).X - viewBox.Transform.Inverse.OfPoint(bbox.Min).X;
+            _tagCenter = (viewBox.Transform.Inverse.OfPoint(bbox.Max) + viewBox.Transform.Inverse.OfPoint(bbox.Min)) / 2;
+            _tagCenter = new XYZ(_tagCenter.X, _tagCenter.Y, 0);
+            _headOffset = _tagHeadPosition - _tagCenter;
         }
 
         private XYZ GetLeaderEnd()
@@ -274,7 +382,20 @@ namespace AlignTag
 
             //Get leader end in view reference
             leaderStart = viewBox.Transform.Inverse.OfPoint(leaderStart);
-            leaderStart = new XYZ(leaderStart.X, leaderStart.Y, 0);
+            leaderStart = new XYZ(Math.Round(leaderStart.X,4), Math.Round(leaderStart.Y,4) ,0);
+
+            //View center
+            XYZ viewCenter = (viewBox.Max + viewBox.Min) / 2;
+
+            if (viewCenter.X > leaderStart.X)
+            {
+                _side = ViewSides.Left;
+            }
+            else
+            {
+                _side = ViewSides.Right;
+            }
+
 
             return leaderStart;
         }
@@ -282,8 +403,22 @@ namespace AlignTag
         public void UpdateTagPosition()
         {
             _tag.LeaderEndCondition = LeaderEndCondition.Attached;
-            _tag.TagHeadPosition = _currentView.CropBox.Transform.OfPoint(_tagHeadPosition);
+
+            XYZ offsetFromView = new XYZ();
+            if (_side == ViewSides.Left)
+            {
+                offsetFromView = new XYZ(-Math.Abs(_tagWidth)*0.5-0.1, 0, 0);
+            }
+            else
+            {
+                offsetFromView = new XYZ(Math.Abs(_tagWidth )* 0.5+0.1, 0, 0);
+            }
+
+
+            _tag.TagHeadPosition = _currentView.CropBox.Transform.OfPoint(_headOffset + _tagCenter + offsetFromView);
             _tag.LeaderElbow = _currentView.CropBox.Transform.OfPoint(_elbowPosition);
         }
     }
+
+    enum ViewSides { Left, Right };
 }
