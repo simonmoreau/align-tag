@@ -1,20 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RevitAddIns>
-  <AddIn Type="Command">
-    <Text>Command AlignTag</Text>
-    <Description>Some description for AlignTag</Description>
-    <Assembly>AlignTag.dll</Assembly>
-    <FullClassName>AlignTag.Command</FullClassName>
-    <ClientId>d78a2c3f-0e7a-4f2e-b421-1342d8dd1bcf</ClientId>
-    <VendorId>TBC_</VendorId>
-    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
-  </AddIn>
   <AddIn Type="Application">
     <Name>Application AlignTag</Name>
     <Assembly>AlignTag.dll</Assembly>
     <FullClassName>AlignTag.App</FullClassName>
-    <ClientId>78de2d88-be41-4627-afb3-5446be3e1676</ClientId>
-    <VendorId>TBC_</VendorId>
-    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+    <ClientId>5a9e8c41-09d6-4cdf-8556-38f8119137a4</ClientId>
+    <VendorId>BM42</VendorId>
+    <VendorDescription>BIM 42, http://bim42.com</VendorDescription>
   </AddIn>
 </RevitAddIns>
