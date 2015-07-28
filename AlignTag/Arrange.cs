@@ -378,7 +378,15 @@ namespace AlignTag
             BoundingBoxXYZ viewBox = _currentView.CropBox;
 
             //Retrive leader end
-            XYZ leaderStart = (bbox.Max + bbox.Min) / 2;
+            XYZ leaderStart = new XYZ();
+            if (bbox != null)
+            {
+                leaderStart = (bbox.Max + bbox.Min) / 2;
+            }
+            else
+            {
+                leaderStart = (viewBox.Max + viewBox.Min) / 2 + new XYZ(0.001, 0, 0);
+            }
 
             //Get leader end in view reference
             leaderStart = viewBox.Transform.Inverse.OfPoint(leaderStart);
