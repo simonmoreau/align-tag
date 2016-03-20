@@ -2,13 +2,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-using Autodesk.Revit.DB.Architecture;
-using System.Globalization;
-using System.Resources;
 #endregion
 
 namespace AlignTag
@@ -37,7 +33,7 @@ namespace AlignTag
                     {
                         tx.RollBack();
                     }
-                    return Autodesk.Revit.UI.Result.Cancelled;
+                    return Result.Cancelled;
                 }
                 catch (ErrorMessageException errorEx)
                 {
@@ -47,7 +43,7 @@ namespace AlignTag
                     {
                         tx.RollBack();
                     }
-                    return Autodesk.Revit.UI.Result.Failed;
+                    return Result.Failed;
                 }
                 catch (Exception ex)
                 {
@@ -58,7 +54,7 @@ namespace AlignTag
                     {
                         tx.RollBack();
                     }
-                    return Autodesk.Revit.UI.Result.Failed;
+                    return Result.Failed;
                 }
             }
         }
@@ -97,40 +93,43 @@ namespace AlignTag
             if (tags.Count > 1)
             {
                 View currentView = doc.ActiveView;
-                XYZ upDir = currentView.UpDirection;
+                XYZ displacementDirection = currentView.UpDirection;
 
                 if (side == "Left" || side == "Right")
                 {
-                    upDir = currentView.RightDirection;
+                    displacementDirection = currentView.RightDirection;
                 }
                 else if (side == "Top" || side == "Bottom")
                 {
-                    upDir = currentView.UpDirection;
+                    displacementDirection = currentView.UpDirection;
                 }
 
-                //Get the max in upDir
-                double maxDirLengh = tags[0].TagHeadPosition.DotProduct(upDir);
-                XYZ maxDir = upDir.Multiply(maxDirLengh);
+                //Get the max in displacementDirection
+                double maxDisplacementDistance = tags[0].TagHeadPosition.DotProduct(displacementDirection);
+                XYZ maxDisplacementVector = displacementDirection.Multiply(maxDisplacementDistance);
                 XYZ headPoint = new XYZ();
 
                 foreach (IndependentTag tag in tags)
                 {
                     headPoint = tag.TagHeadPosition;
+                    
+                    
+                    //BoundingBoxXYZ tagBBox = tag.get_BoundingBox(currentView);
 
                     if (side == "Left" || side == "Bottom")
                     {
-                        if (headPoint.DotProduct(upDir) < maxDirLengh)
+                        if (headPoint.DotProduct(displacementDirection) < maxDisplacementDistance)
                         {
-                            maxDir = upDir.Multiply(headPoint.DotProduct(upDir));
-                            maxDirLengh = headPoint.DotProduct(upDir);
+                            maxDisplacementVector = displacementDirection.Multiply(headPoint.DotProduct(displacementDirection));
+                            maxDisplacementDistance = headPoint.DotProduct(displacementDirection);
                         }
                     }
                     else if (side == "Top" || side == "Right")
                     {
-                        if (headPoint.DotProduct(upDir) > maxDirLengh)
+                        if (headPoint.DotProduct(displacementDirection) > maxDisplacementDistance)
                         {
-                            maxDir = upDir.Multiply(headPoint.DotProduct(upDir));
-                            maxDirLengh = headPoint.DotProduct(upDir);
+                            maxDisplacementVector = displacementDirection.Multiply(headPoint.DotProduct(displacementDirection));
+                            maxDisplacementDistance = headPoint.DotProduct(displacementDirection);
                         }
                     }
 
@@ -142,7 +141,7 @@ namespace AlignTag
                 {
                     headPoint = intag.TagHeadPosition;
 
-                    Transform tr = Transform.CreateTranslation(maxDir - upDir.Multiply(headPoint.DotProduct(upDir)));
+                    Transform tr = Transform.CreateTranslation(maxDisplacementVector - displacementDirection.Multiply(headPoint.DotProduct(displacementDirection)));
 
                     //Get the helbow point
                     if (intag.HasLeader)
@@ -199,7 +198,7 @@ namespace AlignTag
                     {
                         tx.RollBack();
                     }
-                    return Autodesk.Revit.UI.Result.Cancelled;
+                    return Result.Cancelled;
                 }
                 catch (ErrorMessageException errorEx)
                 {

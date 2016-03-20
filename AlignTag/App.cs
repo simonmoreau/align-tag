@@ -44,12 +44,6 @@ namespace AlignTag
             ContextualHelp help = CreateContextualHelp("AlignHelp.chm");
 
 
-            //Create align left button
-            //AlignTag.ExecuteAlign.AlignBottom;
-            //AlignTag.ExecuteAlign.AlignLeft;
-            //AlignTag.ExecuteAlign.AlignRight;
-            //AlignTag.ExecuteAlign.AlignTop;
-
             //Add Align Left Button
             PushButtonData alignLeftButton = new PushButtonData("alignLeftButton", "Align Left", DllPath, "AlignTag.AlignLeft");
             alignLeftButton.ToolTip = "Align Tags Left";
@@ -95,8 +89,8 @@ namespace AlignTag
             //Add Distribute vertically Button
             PushButtonData arrangeButton = new PushButtonData("ArrangeButton", "Arrange\nTags", DllPath, "AlignTag.Arrange");
             arrangeButton.ToolTip = "Arrange Tags around the view";
-            arrangeButton.LargeImage = RetriveImage("AlignTag.Resources.DistributeVerticallyLarge.png");
-            arrangeButton.Image = RetriveImage("AlignTag.Resources.DistributeVerticallySmall.png");
+            arrangeButton.LargeImage = RetriveImage("AlignTag.Resources.ArrangeLarge.png");
+            arrangeButton.Image = RetriveImage("AlignTag.Resources.ArrangeSmall.png");
             arrangeButton.SetContextualHelp(help);
 
             //Group align buttons
@@ -162,7 +156,6 @@ namespace AlignTag
 
                 return new ContextualHelp(ContextualHelpType.ChmFile, HelpPath);
             }
-
         }
     }
 }

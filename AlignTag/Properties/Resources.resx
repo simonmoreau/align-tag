@@ -145,6 +145,12 @@
   <data name="AlignTopSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AlignTopSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ArrangeLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ArrangeLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ArrangeSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ArrangeSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DistributeHorizontallyLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DistributeHorizontallyLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
