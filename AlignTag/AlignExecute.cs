@@ -18,7 +18,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, "Left");
+            return align.AlignElements(commandData, ref message, AlignType.Left);
         }
     }
 
@@ -29,7 +29,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, "Right");
+            return align.AlignElements(commandData, ref message, AlignType.Right);
         }
     }
 
@@ -40,7 +40,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, "Top");
+            return align.AlignElements(commandData, ref message, AlignType.Up);
         }
     }
 
@@ -51,7 +51,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, "Bottom");
+            return align.AlignElements(commandData, ref message, AlignType.Down);
         }
     }
 
@@ -62,7 +62,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.DistributeElements(commandData, ref message, "Horizontally");
+            return align.AlignElements(commandData, ref message, AlignType.Horizontaly);
         }
     }
 
@@ -73,7 +73,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.DistributeElements(commandData, ref message, "Vertically");
+            return align.AlignElements(commandData, ref message, AlignType.Verticaly);
         }
     }
 

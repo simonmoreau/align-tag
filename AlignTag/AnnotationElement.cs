@@ -16,9 +16,9 @@ namespace AlignTag
 
         public XYZ UpRight { get; set; }
 
-        public XYZ LowLeft { get; set; }
+        public XYZ DownLeft { get; set; }
 
-        public XYZ LowRight { get; set; }
+        public XYZ DownRight { get; set; }
 
         public Element Parent { get; set; }
 
@@ -37,12 +37,12 @@ namespace AlignTag
             BoundingBoxXYZ BBox = e.get_BoundingBox(_ownerView);
             XYZ max = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Max);
             XYZ min = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Min);
-            UpLeft = new XYZ(min.X, max.Y, 0);
-            UpRight = new XYZ(max.X, max.Y, 0);
-            LowLeft = new XYZ(min.X, min.Y, 0);
-            LowRight = new XYZ(max.X, min.Y, 0);
+            UpLeft = new XYZ(max.X, max.Y, max.Z);
+            UpRight = new XYZ(min.X, max.Y, max.Z);
+            DownLeft = new XYZ(max.X, min.Y, max.Z);
+            DownRight = new XYZ(min.X, min.Y, max.Z);
 
-            Center = (UpRight + LowLeft) / 2;
+            Center = (UpRight + DownLeft) / 2;
 
             if (e.GetType() == typeof(IndependentTag))
             {
@@ -56,11 +56,50 @@ namespace AlignTag
             }
         }
 
-        public void MoveTo(XYZ point)
+        public void MoveTo(XYZ point, AlignType alignType)
         {
-            
+            XYZ displacementVector = new XYZ();
+
+            switch (alignType)
+            {
+                case AlignType.Left:
+                    displacementVector = point - UpLeft;
+                    break;
+                case AlignType.Right:
+                    displacementVector = point - UpRight;
+                    break;
+                case AlignType.Up:
+                    displacementVector = point - UpRight;
+                    break;
+                case AlignType.Down:
+                    displacementVector = point - DownRight;
+                    break;
+                case AlignType.Verticaly:
+                    displacementVector = point - Center;
+                    break;
+                case AlignType.Horizontaly:
+                    displacementVector = point - Center;
+                    break;
+                default:
+                    break;
+            }
+
+            Transform tr = Transform.CreateTranslation(_ownerView.CropBox.Transform.OfVector(displacementVector));
+
+            if (Parent.GetType() == typeof(IndependentTag))
+            {
+                IndependentTag tag = Parent as IndependentTag;
+                tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
+            }
+            else if (Parent.GetType() == typeof(TextNote))
+            {
+                TextNote note = Parent as TextNote;
+                note.Coord = tr.OfPoint(note.Coord);
+            }
         }
     }
+
+    enum AlignType { Left, Right, Up, Down, Verticaly, Horizontaly };
 
 
 }
