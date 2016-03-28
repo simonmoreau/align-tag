@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.DB.Mechanical;
 #endregion
 
 namespace AlignTag
@@ -66,6 +68,8 @@ namespace AlignTag
             ICollection<ElementId> ids = selection.GetElementIds();
 
             List<Element> elements = new List<Element>();
+            List<Element> roomTags = new List<Element>();
+            List<XYZ> offsets = new List<XYZ>();
 
             using (Transaction tx = new Transaction(UIDoc.Document))
             {
@@ -81,6 +85,7 @@ namespace AlignTag
                         IndependentTag tag = e as IndependentTag;
                         tag.LeaderEndCondition = LeaderEndCondition.Free;
                         tag.LeaderEnd = tag.TagHeadPosition;
+                        tag.LeaderElbow = tag.TagHeadPosition;
                         elements.Add(e);
                     }
                     else if (e.GetType() == typeof(TextNote))
@@ -88,6 +93,36 @@ namespace AlignTag
                         TextNote note = e as TextNote;
                         note.RemoveLeaders();
                         elements.Add(e);
+                    }
+                    else if (e.GetType() == typeof(RoomTag))
+                    {
+                        RoomTag tag = e as RoomTag;
+                        //Adding only room without a leader
+                        if (!tag.HasLeader)
+                        {
+                            elements.Add(e);
+                        }
+                        else if (tag.HasLeader)
+                        {
+                            roomTags.Add(e);
+                            offsets.Add(tag.TagHeadPosition - tag.LeaderEnd);
+                            tag.HasLeader = false;
+                        }
+                    }
+                    else if (e.GetType() == typeof(SpaceTag))
+                    {
+                        SpaceTag tag = e as SpaceTag;
+                        //Adding only room without a leader
+                        if (!tag.HasLeader)
+                        {
+                            elements.Add(e);
+                        }
+                        else if (tag.HasLeader)
+                        {
+                            roomTags.Add(e);
+                            offsets.Add(tag.TagHeadPosition - tag.LeaderEnd);
+                            tag.HasLeader = false;
+                        }
                     }
                 }
 
@@ -98,6 +133,13 @@ namespace AlignTag
                 foreach (Element e in elements)
                 {
                     annotationElements.Add(new AnnotationElement(e));
+                }
+
+                int i = 0;
+                foreach (Element e in roomTags)
+                {
+                    annotationElements.Add(new AnnotationElement(e,offsets[i]));
+                    i++;
                 }
 
                 txg.RollBack();
@@ -115,6 +157,7 @@ namespace AlignTag
 
             // Get the handle of current document.
             Document doc = UIDoc.Document;
+            ICollection<ElementId> selectedIds = UIDoc.Selection.GetElementIds();
 
             List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(UIDoc, txg);
 
@@ -201,6 +244,8 @@ namespace AlignTag
 
 
             txg.Commit();
+
+            UIDoc.Selection.SetElementIds(selectedIds);
         }
     }
 }

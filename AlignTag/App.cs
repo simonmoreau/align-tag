@@ -93,16 +93,22 @@ namespace AlignTag
             arrangeButton.Image = RetriveImage("AlignTag.Resources.ArrangeSmall.png");
             arrangeButton.SetContextualHelp(help);
 
+            
+            bim42Panel.AddStackedItems(alignLeftButton, alignTopButton,distributeHorizontallyButton);
+            bim42Panel.AddStackedItems(alignRightButton, alignBottomButton, distributeVerticallyButton);
+            bim42Panel.AddItem(arrangeButton);
+
             //Group align buttons
-            SplitButtonData sbAlignData = new SplitButtonData("alignSplitButton", "Align Tags");
-            SplitButton sbAlign = bim42Panel.AddItem(sbAlignData) as SplitButton;
-            sbAlign.AddPushButton(alignLeftButton);
-            sbAlign.AddPushButton(alignRightButton);
-            sbAlign.AddPushButton(alignTopButton);
-            sbAlign.AddPushButton(alignBottomButton);
-            sbAlign.AddPushButton(distributeHorizontallyButton);
-            sbAlign.AddPushButton(distributeVerticallyButton);
-            sbAlign.AddPushButton(arrangeButton);
+            //SplitButtonData sbAlignData = new SplitButtonData("alignSplitButton", "Align Tags");
+            //SplitButton sbAlign = bim42Panel.AddItem(sbAlignData) as SplitButton;
+            //sbAlign.AddPushButton(alignLeftButton);
+            //sbAlign.AddPushButton(alignRightButton);
+            //sbAlign.AddPushButton(alignTopButton);
+            //sbAlign.AddPushButton(alignBottomButton);
+            //sbAlign.AddPushButton(distributeHorizontallyButton);
+            //sbAlign.AddPushButton(distributeVerticallyButton);
+            //sbAlign.AddPushButton(arrangeButton);
+
 
         }
 
