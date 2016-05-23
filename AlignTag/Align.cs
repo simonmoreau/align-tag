@@ -102,12 +102,13 @@ namespace AlignTag
                         {
                             elements.Add(e);
                         }
-                        else if (tag.HasLeader)
-                        {
-                            roomTags.Add(e);
-                            offsets.Add(tag.TagHeadPosition - tag.LeaderEnd);
-                            tag.HasLeader = false;
-                        }
+                        //else if (tag.HasLeader)
+                        //{
+                        //    roomTags.Add(e);
+                            
+                        //    offsets.Add((tag.Location as LocationPoint).Point - tag.LeaderEnd);
+                        //    tag.HasLeader = false;
+                        //}
                     }
                     else if (e.GetType() == typeof(SpaceTag))
                     {
@@ -117,12 +118,12 @@ namespace AlignTag
                         {
                             elements.Add(e);
                         }
-                        else if (tag.HasLeader)
-                        {
-                            roomTags.Add(e);
-                            offsets.Add(tag.TagHeadPosition - tag.LeaderEnd);
-                            tag.HasLeader = false;
-                        }
+                        //else if (tag.HasLeader)
+                        //{
+                        //    roomTags.Add(e);
+                        //    offsets.Add((tag.Location as LocationPoint).Point - tag.LeaderEnd);
+                        //    tag.HasLeader = false;
+                        //}
                     }
                 }
 
@@ -135,12 +136,12 @@ namespace AlignTag
                     annotationElements.Add(new AnnotationElement(e));
                 }
 
-                int i = 0;
-                foreach (Element e in roomTags)
-                {
-                    annotationElements.Add(new AnnotationElement(e,offsets[i]));
-                    i++;
-                }
+                //int i = 0;
+                //foreach (Element e in roomTags)
+                //{
+                //    annotationElements.Add(new AnnotationElement(e,offsets[i]));
+                //    i++;
+                //}
 
                 txg.RollBack();
                 txg.Start();
@@ -201,17 +202,39 @@ namespace AlignTag
                             break;
                         case AlignType.Down:
                             farthestAnnotation =
-                                annotationElements.OrderBy(x => x.UpRight.Y).FirstOrDefault();
+                                annotationElements.OrderBy(x => x.DownRight.Y).FirstOrDefault();
                             foreach (AnnotationElement annotationElement in annotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(annotationElement.UpRight.X, farthestAnnotation.UpRight.Y, annotationElement.UpRight.Z);
+                                XYZ resultingPoint = new XYZ(annotationElement.DownRight.X, farthestAnnotation.DownRight.Y, annotationElement.DownRight.Z);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Down);
                             }
                             break;
-                        case AlignType.Verticaly:
-                            List<AnnotationElement> sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.Y).ToList();
+                        case AlignType.Center: //On the same vertical axe
+                            List<AnnotationElement> sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.X).ToList();
+                            AnnotationElement rightAnnotation = sortedAnnotationElements.LastOrDefault();
+                            AnnotationElement leftAnnotation = sortedAnnotationElements.FirstOrDefault();
+                            double XCoord = (rightAnnotation.Center.X + leftAnnotation.Center.X)/2;
+                            foreach (AnnotationElement annotationElement in sortedAnnotationElements)
+                            {
+                                XYZ resultingPoint = new XYZ(XCoord, annotationElement.Center.Y, annotationElement.Center.Z);
+                                annotationElement.MoveTo(resultingPoint, AlignType.Center);
+                            }
+                            break;
+                        case AlignType.Middle: //On the same horizontal axe
+                            sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.Y).ToList();
                             AnnotationElement upperAnnotation = sortedAnnotationElements.LastOrDefault();
                             AnnotationElement lowerAnnotation = sortedAnnotationElements.FirstOrDefault();
+                            double YCoord = (upperAnnotation.Center.Y + lowerAnnotation.Center.Y)/2;
+                            foreach (AnnotationElement annotationElement in sortedAnnotationElements)
+                            {
+                                XYZ resultingPoint = new XYZ( annotationElement.Center.X,YCoord, annotationElement.Center.Z);
+                                annotationElement.MoveTo(resultingPoint, AlignType.Middle);
+                            }
+                            break;
+                        case AlignType.Verticaly:
+                            sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.Y).ToList();
+                            upperAnnotation = sortedAnnotationElements.LastOrDefault();
+                            lowerAnnotation = sortedAnnotationElements.FirstOrDefault();
                             double spacing = (upperAnnotation.Center.Y - lowerAnnotation.Center.Y) / (annotationElements.Count-1);
                             int i = 0;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
@@ -223,8 +246,8 @@ namespace AlignTag
                             break;
                         case AlignType.Horizontaly:
                             sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.X).ToList();
-                            AnnotationElement rightAnnotation = sortedAnnotationElements.LastOrDefault();
-                            AnnotationElement leftAnnotation = sortedAnnotationElements.FirstOrDefault();
+                            rightAnnotation = sortedAnnotationElements.LastOrDefault();
+                            leftAnnotation = sortedAnnotationElements.FirstOrDefault();
                             spacing = (rightAnnotation.Center.X - leftAnnotation.Center.X) / (annotationElements.Count-1);
                             i = 0;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)

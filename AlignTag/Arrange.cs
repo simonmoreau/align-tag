@@ -93,6 +93,8 @@ namespace AlignTag
                 tag.LeaderEnd = tag.TagHeadPosition;
             }
 
+
+
             tx.Commit();
             tx.Start("Arrange Tags");
 

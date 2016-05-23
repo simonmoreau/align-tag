@@ -34,12 +34,24 @@ namespace AlignTag
             _ownerView = _doc.GetElement(e.OwnerViewId) as View;
 
             BoundingBoxXYZ BBox = e.get_BoundingBox(_ownerView);
+            Transform trbb = BBox.Transform;
+
             XYZ max = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Max);
             XYZ min = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Min);
-            UpLeft = new XYZ(max.X, max.Y, max.Z);
-            UpRight = new XYZ(min.X, max.Y, max.Z);
-            DownLeft = new XYZ(max.X, min.Y, max.Z);
-            DownRight = new XYZ(min.X, min.Y, max.Z);
+            if (max.X> min.X)
+            {
+                UpLeft = new XYZ(min.X, max.Y, max.Z);
+                UpRight = new XYZ(max.X, max.Y, max.Z);
+                DownLeft = new XYZ(min.X, min.Y, max.Z);
+                DownRight = new XYZ(max.X, min.Y, max.Z);
+            }
+            else
+            {
+                UpLeft = new XYZ(max.X, max.Y, max.Z);
+                UpRight = new XYZ(min.X, max.Y, max.Z);
+                DownLeft = new XYZ(max.X, min.Y, max.Z);
+                DownRight = new XYZ(min.X, min.Y, max.Z);
+            }
 
             Center = (UpRight + DownLeft) / 2;
         }
@@ -53,10 +65,21 @@ namespace AlignTag
             BoundingBoxXYZ BBox = e.get_BoundingBox(_ownerView);
             XYZ max = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Max);
             XYZ min = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Min);
-            UpLeft = new XYZ(max.X, max.Y, max.Z) + offset;
-            UpRight = new XYZ(min.X, max.Y, max.Z) + offset;
-            DownLeft = new XYZ(max.X, min.Y, max.Z) + offset;
-            DownRight = new XYZ(min.X, min.Y, max.Z) + offset;
+
+            if (max.X > min.X)
+            {
+                UpLeft = new XYZ(min.X, max.Y, max.Z) + offset;
+                UpRight = new XYZ(max.X, max.Y, max.Z) + offset;
+                DownLeft = new XYZ(min.X, min.Y, max.Z) + offset;
+                DownRight = new XYZ(max.X, min.Y, max.Z) + offset;
+            }
+            else
+            {
+                UpLeft = new XYZ(max.X, max.Y, max.Z) + offset;
+                UpRight = new XYZ(min.X, max.Y, max.Z) + offset;
+                DownLeft = new XYZ(max.X, min.Y, max.Z) + offset;
+                DownRight = new XYZ(min.X, min.Y, max.Z) + offset;
+            }
 
             Center = (UpRight + DownLeft) / 2;
         }
@@ -78,6 +101,12 @@ namespace AlignTag
                     break;
                 case AlignType.Down:
                     displacementVector = point - DownRight;
+                    break;
+                case AlignType.Center:
+                    displacementVector = point - Center;
+                    break;
+                case AlignType.Middle:
+                    displacementVector = point - Center;
                     break;
                 case AlignType.Verticaly:
                     displacementVector = point - Center;
@@ -136,12 +165,12 @@ namespace AlignTag
             else if (Parent.GetType() == typeof(RoomTag))
             {
                 RoomTag tag = Parent as RoomTag;
-                tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
+                tag.Location.Move(displacementVector);
             }
             else if (Parent.GetType() == typeof(SpaceTag))
             {
                 SpaceTag tag = Parent as SpaceTag;
-                tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
+                tag.Location.Move(displacementVector);
             }
         }
     }
@@ -170,7 +199,7 @@ namespace AlignTag
         }
     }
 
-    enum AlignType { Left, Right, Up, Down, Verticaly, Horizontaly };
+    enum AlignType { Left, Right, Up, Down,Center, Middle, Verticaly, Horizontaly };
 
 
 }

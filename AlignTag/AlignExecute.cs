@@ -56,6 +56,28 @@ namespace AlignTag
     }
 
     [Transaction(TransactionMode.Manual)]
+    class AlignCenter : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            Align align = new Align();
+
+            return align.AlignElements(commandData, ref message, AlignType.Center);
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
+    class AlignMiddle : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            Align align = new Align();
+
+            return align.AlignElements(commandData, ref message, AlignType.Middle);
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
     class DistributeHorizontally : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
