@@ -278,10 +278,57 @@ namespace AlignTag
                             break;
                     }
                 }
+                else
+                {
+                    // 2. Second Proposed Change
+                    //    If not AnnotationElement
+                    //    Envoke a general case that will align ANY Element based on their BoundingBox
+                    //    I used my method for that, if you don't mind. Maybe we can combine the two if needed
+
+                    Element[] elements = null;
+                    double[] centers = null;
+                    View current = doc.ActiveView;
+                    bool distribute = (alignType.Equals(AlignType.Horizontaly) || alignType.Equals(AlignType.Verticaly)) ? true : false;
+
+                    SetValues(doc, current, selectedIds.ToList(), alignType, ref elements, ref centers);
+
+                    double distance = distribute ? (centers[centers.Length - 1] - centers[0]) / (centers.Length - 1) : (centers[centers.Length - 1] + centers[0]) / 2;
+
+                    double delta = 0;
+
+                    XYZ translation = null;
+                    
+                    for (int i = 0; i < centers.Length; i++)
+                    {
+                        if (distribute)
+                        {
+                            delta = (i * distance - (centers[i] - centers[0])); // distribute
+                        }
+                        else
+                        {
+                            delta = distance - centers[i]; // align
+                        }
+                        switch (alignType)
+                        {
+                            case AlignType.Up:
+                            case AlignType.Down:
+                            case AlignType.Middle:
+                            case AlignType.Verticaly:
+                                translation = new XYZ(0, delta, 0);
+                                break;
+                            case AlignType.Left:
+                            case AlignType.Right:
+                            case AlignType.Center:
+                            case AlignType.Horizontaly:
+                                translation = new XYZ(delta, 0, 0);
+                                break;
+                        }
+                        ElementTransformUtils.MoveElement(doc, elements[i].Id, translation);
+                    }
+                }
 
                 tx.Commit();
             }
-
 
             txg.Commit();
 
@@ -289,6 +336,39 @@ namespace AlignTag
             if (empty) selectedIds = new List<ElementId> { ElementId.InvalidElementId };
 
             UIDoc.Selection.SetElementIds(selectedIds);
+        }
+
+        private void SetValues(Document doc, View view, IList<ElementId> elId, AlignType alignType, ref Element[] elements, ref double[] centers)
+        {
+            switch (alignType)
+            {
+                case AlignType.Verticaly:
+                case AlignType.Middle:
+                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).Y).ToArray();
+                    centers = elements.Select(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).Y).ToArray();
+                    break;
+                case AlignType.Horizontaly:
+                case AlignType.Center:
+                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).X).ToArray();
+                    centers = elements.Select(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).X).ToArray();
+                    break;
+                case AlignType.Up:
+                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Min.Y).ToArray();
+                    centers = elements.Select(o => o.get_BoundingBox(view).Min.Y).ToArray();
+                    break;
+                case AlignType.Down:
+                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Max.Y).ToArray();
+                    centers = elements.Select(o => o.get_BoundingBox(view).Max.Y).ToArray();
+                    break;
+                case AlignType.Left:
+                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Min.X).ToArray();
+                    centers = elements.Select(o => o.get_BoundingBox(view).Min.X).ToArray();
+                    break;
+                case AlignType.Right:
+                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Max.X).ToArray();
+                    centers = elements.Select(o => o.get_BoundingBox(view).Max.X).ToArray();
+                    break;
+            }
         }
     }
 }
