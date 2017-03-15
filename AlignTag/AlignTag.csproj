@@ -26,6 +26,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(ProgramW6432)\Autodesk\Revit 2017\Revit.exe</StartProgram>
     <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -82,6 +83,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -138,9 +140,7 @@
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\signtool.exe" sign /fd SHA256 /du "http://www.eai.fr" /tr "http://timestamp.comodoca.com/authenticode" "$(TargetPath)"
-
-copy "$(ProjectDir)AlignTag.addin" "$(AppData)\Autodesk\REVIT\Addins\2017"
+    <PostBuildEvent>copy "$(ProjectDir)AlignTag.addin" "$(AppData)\Autodesk\REVIT\Addins\2017"
 copy "$(ProjectDir)bin\debug\AlignTag.dll" "$(AppData)\Autodesk\REVIT\Addins\2017"</PostBuildEvent>
   </PropertyGroup>
 </Project>

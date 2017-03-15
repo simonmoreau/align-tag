@@ -70,6 +70,11 @@ namespace AlignTag
 
             }
         }
+
+        internal static ICollection<ElementId> RevitReferencesToElementIds(Document doc, IList<Reference> selectedReferences)
+        {
+            return selectedReferences.Select(x => doc.GetElement(x).Id).ToList();
+        }
     }
 
     /// <summary>

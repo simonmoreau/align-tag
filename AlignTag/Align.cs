@@ -160,6 +160,23 @@ namespace AlignTag
             Document doc = UIDoc.Document;
             ICollection<ElementId> selectedIds = UIDoc.Selection.GetElementIds();
 
+            // 1. First Proposed Change
+            //    First check if there is something that's been seleted, and if so - operate on that
+            //    However, if the Uidoc.Slection is empty, prompt for selection. 
+            //    This allows you to stay on the 'Add-ins' Tab and keep using the 'Align' tab without going back and forth to 'Modify'
+            //    TO-DO: Should we disselect after we are done? (delete the boolean stuff if you don't think it's worth disselecting)
+
+            bool empty = false;
+
+            if(selectedIds.Count == 0)
+            {
+                empty = true;
+
+                IList<Reference> selectedReferences = UIDoc.Selection.PickObjects(ObjectType.Element, "Pick elements to be aligned");
+                selectedIds = Tools.RevitReferencesToElementIds(doc, selectedReferences);
+                UIDoc.Selection.SetElementIds(selectedIds);
+            }
+
             List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(UIDoc, txg);
 
             using (Transaction tx = new Transaction(doc))
@@ -267,6 +284,9 @@ namespace AlignTag
 
 
             txg.Commit();
+
+            // Disselect if the selection was empty to begin with
+            if (empty) selectedIds = new List<ElementId> { ElementId.InvalidElementId };
 
             UIDoc.Selection.SetElementIds(selectedIds);
         }
