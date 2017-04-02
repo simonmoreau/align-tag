@@ -24,9 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
-    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2017\Revit.exe</StartProgram>
-    <Prefer32Bit>false</Prefer32Bit>
-    <PlatformTarget>x64</PlatformTarget>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit Preview Release\Revit.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,17 +34,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
-    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2017\Revit.exe</StartProgram>
-    <Prefer32Bit>false</Prefer32Bit>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit Preview Release\Revit.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="RevitAPI">
-      <HintPath>$(ProgramW6432)\Autodesk\Revit 2017\RevitAPI.dll</HintPath>
+      <HintPath>$(ProgramW6432)\Autodesk\Revit Preview Release\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>$(ProgramW6432)\Autodesk\Revit 2017\RevitAPIUI.dll</HintPath>
+      <HintPath>$(ProgramW6432)\Autodesk\Revit Preview Release\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -140,7 +137,8 @@
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)AlignTag.addin" "$(AppData)\Autodesk\REVIT\Addins\2017"
-copy "$(ProjectDir)bin\debug\AlignTag.dll" "$(AppData)\Autodesk\REVIT\Addins\2017"</PostBuildEvent>
+    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\signtool.exe" sign /fd SHA256 /du "http://www.eai.fr" /tr "http://timestamp.comodoca.com/authenticode" "$(TargetPath)"
+copy "$(ProjectDir)AlignTag.addin" "$(AppData)\Autodesk\REVIT\Addins\2018"
+copy "$(ProjectDir)bin\debug\AlignTag.dll" "$(AppData)\Autodesk\REVIT\Addins\2018"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -75,6 +75,130 @@ namespace AlignTag
         {
             return selectedReferences.Select(x => doc.GetElement(x).Id).ToList();
         }
+
+        public static void CreateDebuggingSphere(Document doc, XYZ point, string value, Color color)
+        {
+
+            using (Transaction tx = new Transaction(doc))
+            {
+
+                tx.Start("Create Direct Shapes Spheres");
+
+                Solid solid = CreateSphereAt(point, 0.5);
+
+                CreateDirectShape(doc, solid, color, value + "{" + point.X + "," + point.Y + "," + point.Z + "}");
+
+                tx.Commit();
+            }
+        }
+
+        public static void DrawInView(Document doc, View view, XYZ point)
+        {
+
+            // Create a geometry plane
+            
+            XYZ origin = view.CropBox.Transform.Inverse.OfPoint(point);
+            XYZ normal = view.ViewDirection;
+
+            Plane geomPlane = Plane.CreateByNormalAndOrigin(normal, origin);
+
+            //Create a circle
+            Arc geomCircle = Arc.Create(origin, 10, 0, 2.0 * Math.PI, geomPlane.XVec, geomPlane.YVec);
+
+
+            // Create a sketch plane in current document
+
+            SketchPlane.Create(doc, geomPlane);
+
+            // Create a DetailLine element using the 
+            // newly created geometry line and sketch plane
+
+            DetailLine line = doc.Create.NewDetailCurve(view, geomCircle) as DetailLine;
+
+
+        }
+
+        public void DrawInViewCoordinates(Document doc)
+        {
+            View view = doc.ActiveView;
+
+            //0 of the view
+            XYZ origin = new XYZ(0, 0, 0);
+            //In the model reference
+            XYZ viewOriginInodel = view.CropBox.Transform.OfPoint(origin);
+            Solid originSolid = CreateSphereAt(viewOriginInodel, 0.1);
+            CreateDirectShape(doc, originSolid, new Color(0, 255, 0), "View Origin");
+
+
+            origin = new XYZ(1, 0, 0);
+            //In the model reference
+            viewOriginInodel = view.CropBox.Transform.OfPoint(origin);
+            originSolid = CreateSphereAt(viewOriginInodel, 0.1);
+            CreateDirectShape(doc, originSolid, new Color(0, 255, 0), "View X");
+
+            origin = new XYZ(0, 1, 0);
+            //In the model reference
+            viewOriginInodel = view.CropBox.Transform.OfPoint(origin);
+            originSolid = CreateSphereAt(viewOriginInodel, 0.1);
+            CreateDirectShape(doc, originSolid, new Color(0, 255, 0), "View Y");
+
+            origin = new XYZ(0, 0, 1);
+            //In the model reference
+            viewOriginInodel = view.CropBox.Transform.OfPoint(origin);
+            originSolid = CreateSphereAt(viewOriginInodel, 0.1);
+            CreateDirectShape(doc, originSolid, new Color(0, 255, 0), "View Z");
+
+        }
+
+
+
+        private static void CreateDirectShape(Document doc, Solid solid, Color color, string paramValue)
+        {
+            OverrideGraphicSettings ogs = new OverrideGraphicSettings();
+            ogs.SetProjectionFillColor(color); //new Color(0,255,0)
+            ogs.SetProjectionFillPatternId(new ElementId(4));
+            ogs.SetProjectionFillPatternVisible(true);
+
+            // create direct shape and assign the sphere shape
+            DirectShape dsmax = DirectShape.CreateElement(doc, new ElementId(BuiltInCategory.OST_GenericModel));
+
+            dsmax.ApplicationId = "ApplicationID";
+            dsmax.ApplicationDataId = "ApplicationDataId";
+
+            dsmax.SetShape(new GeometryObject[] { solid });
+            doc.ActiveView.SetElementOverrides(dsmax.Id, ogs);
+
+            Parameter parameter = dsmax.get_Parameter(BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS);
+            parameter.Set(paramValue);
+        }
+
+        /// <summary>
+        /// Create and return a solid sphere with
+        /// a given radius and centre point.
+        /// </summary>
+        private static Solid CreateSphereAt(XYZ centre, double radius)
+        {
+            // Use the standard global coordinate system
+            // as a frame, translated to the sphere centre.
+
+            Frame frame = new Frame(centre, XYZ.BasisX, XYZ.BasisY, XYZ.BasisZ);
+
+            // Create a vertical half-circle loop;
+            // this must be in the frame location.
+
+            Arc arc = Arc.Create(centre - radius * XYZ.BasisZ, centre + radius * XYZ.BasisZ, centre + radius * XYZ.BasisX);
+
+            Line line = Line.CreateBound(arc.GetEndPoint(1), arc.GetEndPoint(0));
+
+            CurveLoop halfCircle = new CurveLoop(); halfCircle.Append(arc); halfCircle.Append(line);
+
+            List<CurveLoop> loops = new List<CurveLoop>(1);
+
+            loops.Add(halfCircle);
+
+            return GeometryCreationUtilities.CreateRevolvedGeometry(frame, loops, 0, 2 * Math.PI);
+        }
+
     }
 
     /// <summary>
@@ -104,7 +228,7 @@ namespace AlignTag
     /// <summary>
     /// Manage Warning in the Revit interface
     /// </summary>
-    public class PlintePreprocessor : IFailuresPreprocessor
+    public class CommitPreprocessor : IFailuresPreprocessor
     {
         public FailureProcessingResult PreprocessFailures(FailuresAccessor failuresAccessor)
         {
@@ -116,7 +240,10 @@ namespace AlignTag
                 // check FailureDefinitionIds against ones that you want to dismiss,
                 FailureDefinitionId failID = failure.GetFailureDefinitionId();
                 // prevent Revit from showing Unenclosed room warnings
-                if (failID == BuiltInFailures.OverlapFailures.WallsOverlap)
+                if (failID == BuiltInFailures.RoomFailures.RoomTagNotInRoom ||
+                    failID == BuiltInFailures.RoomFailures.RoomTagNotInRoomToArea ||
+                    failID == BuiltInFailures.RoomFailures.RoomTagNotInRoomToRoom ||
+                    failID == BuiltInFailures.RoomFailures.RoomTagNotInRoomToSpace)
                 {
                     failuresAccessor.DeleteWarning(failure);
                 }

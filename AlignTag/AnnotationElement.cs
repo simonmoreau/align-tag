@@ -31,57 +31,53 @@ namespace AlignTag
         {
             Parent = e;
             _doc = e.Document;
-            _ownerView = _doc.GetElement(e.OwnerViewId) as View;
 
-            BoundingBoxXYZ BBox = e.get_BoundingBox(_ownerView);
-            Transform trbb = BBox.Transform;
 
-            XYZ max = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Max);
-            XYZ min = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Min);
-            if (max.X> min.X)
+            if (_doc.GetElement(e.OwnerViewId) != null)
             {
-                UpLeft = new XYZ(min.X, max.Y, max.Z);
-                UpRight = new XYZ(max.X, max.Y, max.Z);
-                DownLeft = new XYZ(min.X, min.Y, max.Z);
-                DownRight = new XYZ(max.X, min.Y, max.Z);
+                _ownerView = _doc.GetElement(e.OwnerViewId) as View;
             }
             else
             {
-                UpLeft = new XYZ(max.X, max.Y, max.Z);
-                UpRight = new XYZ(min.X, max.Y, max.Z);
-                DownLeft = new XYZ(max.X, min.Y, max.Z);
-                DownRight = new XYZ(min.X, min.Y, max.Z);
+                _ownerView = _doc.ActiveView;
             }
+
+            BoundingBoxXYZ elementBBox = e.get_BoundingBox(_ownerView);
+            Transform ownerViewTransform = _ownerView.CropBox.Transform;
+
+            XYZ max = ownerViewTransform.Inverse.OfPoint(elementBBox.Max);
+            XYZ min = ownerViewTransform.Inverse.OfPoint(elementBBox.Min);
+
+            UpLeft = new XYZ(GetMin(min.X, max.X), GetMax(max.Y, min.Y), 0);
+            UpRight = new XYZ(GetMax(min.X, max.X), GetMax(max.Y, min.Y), 0);
+            DownLeft = new XYZ(GetMin(min.X, max.X), GetMin(max.Y, min.Y), 0);
+            DownRight = new XYZ(GetMax(min.X, max.X), GetMin(max.Y, min.Y), 0);
 
             Center = (UpRight + DownLeft) / 2;
         }
 
-        public AnnotationElement(Element e, XYZ offset)
+        private double GetMax(double value1, double value2)
         {
-            Parent = e;
-            _doc = e.Document;
-            _ownerView = _doc.GetElement(e.OwnerViewId) as View;
-
-            BoundingBoxXYZ BBox = e.get_BoundingBox(_ownerView);
-            XYZ max = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Max);
-            XYZ min = _ownerView.CropBox.Transform.Inverse.OfPoint(BBox.Min);
-
-            if (max.X > min.X)
+            if (value1 >= value2)
             {
-                UpLeft = new XYZ(min.X, max.Y, max.Z) + offset;
-                UpRight = new XYZ(max.X, max.Y, max.Z) + offset;
-                DownLeft = new XYZ(min.X, min.Y, max.Z) + offset;
-                DownRight = new XYZ(max.X, min.Y, max.Z) + offset;
+                return value1;
             }
             else
             {
-                UpLeft = new XYZ(max.X, max.Y, max.Z) + offset;
-                UpRight = new XYZ(min.X, max.Y, max.Z) + offset;
-                DownLeft = new XYZ(max.X, min.Y, max.Z) + offset;
-                DownRight = new XYZ(min.X, min.Y, max.Z) + offset;
+                return value2;
             }
+        }
 
-            Center = (UpRight + DownLeft) / 2;
+        private double GetMin(double value1, double value2)
+        {
+            if (value1 >= value2)
+            {
+                return value2;
+            }
+            else
+            {
+                return value1;
+            }
         }
 
         public void MoveTo(XYZ point, AlignType alignType)
@@ -126,8 +122,8 @@ namespace AlignTag
                 CustomLeader leader = new CustomLeader();
                 if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                 {
-                    
-                    leader = new CustomLeader(tag.LeaderEnd,new XYZ(0,0,0));
+
+                    leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
                 }
 
                 tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
@@ -159,18 +155,30 @@ namespace AlignTag
                     {
                         leader.End = leaders[i].End;
                         leader.Elbow = leaders[i].Elbow;
+                        i++;
                     }
                 }
             }
-            else if (Parent.GetType() == typeof(RoomTag))
+            else if (Parent.GetType().IsSubclassOf(typeof(SpatialElementTag)))
             {
-                RoomTag tag = Parent as RoomTag;
-                tag.Location.Move(displacementVector);
+                SpatialElementTag tag = Parent as SpatialElementTag;
+
+                CustomLeader leader = new CustomLeader();
+                if (tag.HasLeader)
+                {
+                    leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+                }
+
+                tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
+
+                if (tag.HasLeader)
+                {
+                    tag.LeaderEnd = leader.End;
+                }
             }
-            else if (Parent.GetType() == typeof(SpaceTag))
+            else
             {
-                SpaceTag tag = Parent as SpaceTag;
-                tag.Location.Move(displacementVector);
+                Parent.Location.Move(_ownerView.CropBox.Transform.OfVector(displacementVector));
             }
         }
     }
@@ -199,7 +207,17 @@ namespace AlignTag
         }
     }
 
-    enum AlignType { Left, Right, Up, Down,Center, Middle, Verticaly, Horizontaly };
+    enum AlignType { Left, Right, Up, Down, Center, Middle, Verticaly, Horizontaly };
 
+    class OffsetedElement
+    {
+        public OffsetedElement(Element e, XYZ offset)
+        {
+            Element = e;
+            Offset = offset;
+        }
 
+        public Element Element { get; set; }
+        public XYZ Offset { get; set; }
+    }
 }

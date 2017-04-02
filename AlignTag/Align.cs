@@ -23,14 +23,15 @@ namespace AlignTag
                 try
                 {
                     // Add Your Code Here
-                    AlignTag(UIdoc, txg, alignType);
+                    AlignTag(UIdoc, alignType, txg);
+                    
                     // Return Success
                     return Result.Succeeded;
                 }
 
                 catch (Autodesk.Revit.Exceptions.OperationCanceledException exceptionCanceled)
                 {
-                    message = exceptionCanceled.Message;
+                    //message = exceptionCanceled.Message;
                     if (txg.HasStarted())
                     {
                         txg.RollBack();
@@ -61,104 +62,82 @@ namespace AlignTag
             }
         }
 
-        private List<AnnotationElement> RetriveAnnotationElementsFromSelection(UIDocument UIDoc, TransactionGroup txg)
+        private List<AnnotationElement> RetriveAnnotationElementsFromSelection(UIDocument UIDoc, Transaction tx)
         {
             // Get the element selection of current document.
             Selection selection = UIDoc.Selection;
             ICollection<ElementId> ids = selection.GetElementIds();
 
             List<Element> elements = new List<Element>();
-            List<Element> roomTags = new List<Element>();
-            List<XYZ> offsets = new List<XYZ>();
 
-            using (Transaction tx = new Transaction(UIDoc.Document))
+            List<AnnotationElement> annotationElements = new List<AnnotationElement>();
+
+            tx.Start("Prepare tags");
+
+            //Remove all leader to find the correct tag height and width
+            foreach (ElementId id in ids)
             {
-                tx.Start("Prepare tags");
+                Element e = UIDoc.Document.GetElement(id);
 
-                //Remove all leader to find the correct tag height and width
-                foreach (ElementId id in ids)
+                if (e.GetType() == typeof(IndependentTag))
                 {
-                    Element e = UIDoc.Document.GetElement(id);
-
-                    if (e.GetType() == typeof(IndependentTag))
+                    IndependentTag tag = e as IndependentTag;
+                    tag.LeaderEndCondition = LeaderEndCondition.Free;
+                    if (tag.HasLeader)
                     {
-                        IndependentTag tag = e as IndependentTag;
-                        tag.LeaderEndCondition = LeaderEndCondition.Free;
                         tag.LeaderEnd = tag.TagHeadPosition;
                         tag.LeaderElbow = tag.TagHeadPosition;
-                        elements.Add(e);
                     }
-                    else if (e.GetType() == typeof(TextNote))
-                    {
-                        TextNote note = e as TextNote;
-                        note.RemoveLeaders();
-                        elements.Add(e);
-                    }
-                    else if (e.GetType() == typeof(RoomTag))
-                    {
-                        RoomTag tag = e as RoomTag;
-                        //Adding only room without a leader
-                        if (!tag.HasLeader)
-                        {
-                            elements.Add(e);
-                        }
-                        //else if (tag.HasLeader)
-                        //{
-                        //    roomTags.Add(e);
-                            
-                        //    offsets.Add((tag.Location as LocationPoint).Point - tag.LeaderEnd);
-                        //    tag.HasLeader = false;
-                        //}
-                    }
-                    else if (e.GetType() == typeof(SpaceTag))
-                    {
-                        SpaceTag tag = e as SpaceTag;
-                        //Adding only room without a leader
-                        if (!tag.HasLeader)
-                        {
-                            elements.Add(e);
-                        }
-                        //else if (tag.HasLeader)
-                        //{
-                        //    roomTags.Add(e);
-                        //    offsets.Add((tag.Location as LocationPoint).Point - tag.LeaderEnd);
-                        //    tag.HasLeader = false;
-                        //}
-                    }
+
+                    elements.Add(e);
                 }
-
-                tx.Commit();
-
-                List<AnnotationElement> annotationElements = new List<AnnotationElement>();
-
-                foreach (Element e in elements)
+                else if (e.GetType() == typeof(TextNote))
                 {
-                    annotationElements.Add(new AnnotationElement(e));
+                    TextNote note = e as TextNote;
+                    note.RemoveLeaders();
+                    elements.Add(e);
                 }
+                else if (e.GetType().IsSubclassOf(typeof(SpatialElementTag)))
+                {
+                    SpatialElementTag tag = e as SpatialElementTag;
 
-                //int i = 0;
-                //foreach (Element e in roomTags)
-                //{
-                //    annotationElements.Add(new AnnotationElement(e,offsets[i]));
-                //    i++;
-                //}
-
-                txg.RollBack();
-                txg.Start();
-
-                return annotationElements;
-
+                    if (tag.HasLeader)
+                    {
+                        tag.LeaderEnd = tag.TagHeadPosition;
+                        tag.LeaderElbow = tag.TagHeadPosition;
+                    }
+                    elements.Add(e);
+                }
+                else
+                {
+                    elements.Add(e);
+                }
             }
+
+
+            FailureHandlingOptions options = tx.GetFailureHandlingOptions();
+
+            options.SetFailuresPreprocessor(new CommitPreprocessor());
+            // Now, showing of any eventual mini-warnings will be postponed until the following transaction.
+            tx.Commit(options);
+
+            foreach (Element e in elements)
+            {
+                annotationElements.Add(new AnnotationElement(e));
+            }
+
+            return annotationElements;
         }
 
-        private void AlignTag(UIDocument UIDoc, TransactionGroup txg, AlignType alignType)
+        private void AlignTag(UIDocument UIDoc,AlignType alignType, TransactionGroup txg)
         {
-
-            txg.Start();
+            
 
             // Get the handle of current document.
             Document doc = UIDoc.Document;
             ICollection<ElementId> selectedIds = UIDoc.Selection.GetElementIds();
+
+
 
             // 1. First Proposed Change
             //    First check if there is something that's been seleted, and if so - operate on that
@@ -168,19 +147,25 @@ namespace AlignTag
 
             bool empty = false;
 
-            if(selectedIds.Count == 0)
-            {
-                empty = true;
-
-                IList<Reference> selectedReferences = UIDoc.Selection.PickObjects(ObjectType.Element, "Pick elements to be aligned");
-                selectedIds = Tools.RevitReferencesToElementIds(doc, selectedReferences);
-                UIDoc.Selection.SetElementIds(selectedIds);
-            }
-
-            List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(UIDoc, txg);
-
             using (Transaction tx = new Transaction(doc))
             {
+                txg.Start("Align Tag");
+
+                if (selectedIds.Count == 0)
+                {
+                    empty = true;
+
+                    IList<Reference> selectedReferences = UIDoc.Selection.PickObjects(ObjectType.Element, "Pick elements to be aligned");
+                    selectedIds = Tools.RevitReferencesToElementIds(doc, selectedReferences);
+                    UIDoc.Selection.SetElementIds(selectedIds);
+                }
+
+
+                List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(UIDoc, tx);
+
+                txg.RollBack();
+                txg.Start("Align Tag");
+
                 tx.Start("Align Tags");
 
                 if (annotationElements.Count > 1)
@@ -195,7 +180,7 @@ namespace AlignTag
                                 annotationElements.OrderBy(x => x.UpLeft.X).FirstOrDefault();
                             foreach (AnnotationElement annotationElement in annotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(farthestAnnotation.UpLeft.X, annotationElement.UpLeft.Y, annotationElement.UpLeft.Z);
+                                XYZ resultingPoint = new XYZ(farthestAnnotation.UpLeft.X, annotationElement.UpLeft.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Left);
                             }
                             break;
@@ -204,7 +189,7 @@ namespace AlignTag
                                 annotationElements.OrderByDescending(x => x.UpRight.X).FirstOrDefault();
                             foreach (AnnotationElement annotationElement in annotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(farthestAnnotation.UpRight.X, annotationElement.UpRight.Y, annotationElement.UpRight.Z);
+                                XYZ resultingPoint = new XYZ(farthestAnnotation.UpRight.X, annotationElement.UpRight.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Right);
                             }
                             break;
@@ -213,7 +198,7 @@ namespace AlignTag
                                 annotationElements.OrderByDescending(x => x.UpRight.Y).FirstOrDefault();
                             foreach (AnnotationElement annotationElement in annotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(annotationElement.UpRight.X, farthestAnnotation.UpRight.Y, annotationElement.UpRight.Z);
+                                XYZ resultingPoint = new XYZ(annotationElement.UpRight.X, farthestAnnotation.UpRight.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Up);
                             }
                             break;
@@ -222,7 +207,7 @@ namespace AlignTag
                                 annotationElements.OrderBy(x => x.DownRight.Y).FirstOrDefault();
                             foreach (AnnotationElement annotationElement in annotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(annotationElement.DownRight.X, farthestAnnotation.DownRight.Y, annotationElement.DownRight.Z);
+                                XYZ resultingPoint = new XYZ(annotationElement.DownRight.X, farthestAnnotation.DownRight.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Down);
                             }
                             break;
@@ -230,10 +215,10 @@ namespace AlignTag
                             List<AnnotationElement> sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.X).ToList();
                             AnnotationElement rightAnnotation = sortedAnnotationElements.LastOrDefault();
                             AnnotationElement leftAnnotation = sortedAnnotationElements.FirstOrDefault();
-                            double XCoord = (rightAnnotation.Center.X + leftAnnotation.Center.X)/2;
+                            double XCoord = (rightAnnotation.Center.X + leftAnnotation.Center.X) / 2;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(XCoord, annotationElement.Center.Y, annotationElement.Center.Z);
+                                XYZ resultingPoint = new XYZ(XCoord, annotationElement.Center.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Center);
                             }
                             break;
@@ -241,10 +226,10 @@ namespace AlignTag
                             sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.Y).ToList();
                             AnnotationElement upperAnnotation = sortedAnnotationElements.LastOrDefault();
                             AnnotationElement lowerAnnotation = sortedAnnotationElements.FirstOrDefault();
-                            double YCoord = (upperAnnotation.Center.Y + lowerAnnotation.Center.Y)/2;
+                            double YCoord = (upperAnnotation.Center.Y + lowerAnnotation.Center.Y) / 2;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
-                                XYZ resultingPoint = new XYZ( annotationElement.Center.X,YCoord, annotationElement.Center.Z);
+                                XYZ resultingPoint = new XYZ(annotationElement.Center.X, YCoord, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Middle);
                             }
                             break;
@@ -252,11 +237,11 @@ namespace AlignTag
                             sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.Y).ToList();
                             upperAnnotation = sortedAnnotationElements.LastOrDefault();
                             lowerAnnotation = sortedAnnotationElements.FirstOrDefault();
-                            double spacing = (upperAnnotation.Center.Y - lowerAnnotation.Center.Y) / (annotationElements.Count-1);
+                            double spacing = (upperAnnotation.Center.Y - lowerAnnotation.Center.Y) / (annotationElements.Count - 1);
                             int i = 0;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(annotationElement.Center.X, lowerAnnotation.Center.Y + i*spacing, annotationElement.Center.Z);
+                                XYZ resultingPoint = new XYZ(annotationElement.Center.X, lowerAnnotation.Center.Y + i * spacing, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Verticaly);
                                 i++;
                             }
@@ -265,11 +250,11 @@ namespace AlignTag
                             sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.X).ToList();
                             rightAnnotation = sortedAnnotationElements.LastOrDefault();
                             leftAnnotation = sortedAnnotationElements.FirstOrDefault();
-                            spacing = (rightAnnotation.Center.X - leftAnnotation.Center.X) / (annotationElements.Count-1);
+                            spacing = (rightAnnotation.Center.X - leftAnnotation.Center.X) / (annotationElements.Count - 1);
                             i = 0;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
-                                XYZ resultingPoint = new XYZ(leftAnnotation.Center.X + i * spacing,annotationElement.Center.Y, annotationElement.Center.Z);
+                                XYZ resultingPoint = new XYZ(leftAnnotation.Center.X + i * spacing, annotationElement.Center.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Horizontaly);
                                 i++;
                             }
@@ -278,59 +263,12 @@ namespace AlignTag
                             break;
                     }
                 }
-                else
-                {
-                    // 2. Second Proposed Change
-                    //    If not AnnotationElement
-                    //    Envoke a general case that will align ANY Element based on their BoundingBox
-                    //    I used my method for that, if you don't mind. Maybe we can combine the two if needed
 
-                    Element[] elements = null;
-                    double[] centers = null;
-                    View current = doc.ActiveView;
-                    bool distribute = (alignType.Equals(AlignType.Horizontaly) || alignType.Equals(AlignType.Verticaly)) ? true : false;
-
-                    SetValues(doc, current, selectedIds.ToList(), alignType, ref elements, ref centers);
-
-                    double distance = distribute ? (centers[centers.Length - 1] - centers[0]) / (centers.Length - 1) : (centers[centers.Length - 1] + centers[0]) / 2;
-
-                    double delta = 0;
-
-                    XYZ translation = null;
-                    
-                    for (int i = 0; i < centers.Length; i++)
-                    {
-                        if (distribute)
-                        {
-                            delta = (i * distance - (centers[i] - centers[0])); // distribute
-                        }
-                        else
-                        {
-                            delta = distance - centers[i]; // align
-                        }
-                        switch (alignType)
-                        {
-                            case AlignType.Up:
-                            case AlignType.Down:
-                            case AlignType.Middle:
-                            case AlignType.Verticaly:
-                                translation = new XYZ(0, delta, 0);
-                                break;
-                            case AlignType.Left:
-                            case AlignType.Right:
-                            case AlignType.Center:
-                            case AlignType.Horizontaly:
-                                translation = new XYZ(delta, 0, 0);
-                                break;
-                        }
-                        ElementTransformUtils.MoveElement(doc, elements[i].Id, translation);
-                    }
-                }
 
                 tx.Commit();
-            }
 
-            txg.Commit();
+                txg.Assimilate();
+            }
 
             // Disselect if the selection was empty to begin with
             if (empty) selectedIds = new List<ElementId> { ElementId.InvalidElementId };
@@ -338,37 +276,5 @@ namespace AlignTag
             UIDoc.Selection.SetElementIds(selectedIds);
         }
 
-        private void SetValues(Document doc, View view, IList<ElementId> elId, AlignType alignType, ref Element[] elements, ref double[] centers)
-        {
-            switch (alignType)
-            {
-                case AlignType.Verticaly:
-                case AlignType.Middle:
-                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).Y).ToArray();
-                    centers = elements.Select(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).Y).ToArray();
-                    break;
-                case AlignType.Horizontaly:
-                case AlignType.Center:
-                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).X).ToArray();
-                    centers = elements.Select(o => ((o.get_BoundingBox(view).Max + o.get_BoundingBox(view).Min) / 2).X).ToArray();
-                    break;
-                case AlignType.Up:
-                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Min.Y).ToArray();
-                    centers = elements.Select(o => o.get_BoundingBox(view).Min.Y).ToArray();
-                    break;
-                case AlignType.Down:
-                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Max.Y).ToArray();
-                    centers = elements.Select(o => o.get_BoundingBox(view).Max.Y).ToArray();
-                    break;
-                case AlignType.Left:
-                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Min.X).ToArray();
-                    centers = elements.Select(o => o.get_BoundingBox(view).Min.X).ToArray();
-                    break;
-                case AlignType.Right:
-                    elements = elId.Select(i => doc.GetElement(i)).OrderBy(o => o.get_BoundingBox(view).Max.X).ToArray();
-                    centers = elements.Select(o => o.get_BoundingBox(view).Max.X).ToArray();
-                    break;
-            }
-        }
     }
 }
