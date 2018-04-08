@@ -11,7 +11,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AlignTag</RootNamespace>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -137,8 +137,7 @@
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>"C:\Program Files (x86)\Windows Kits\8.1\bin\x64\signtool.exe" sign /fd SHA256 /du "http://www.eai.fr" /tr "http://timestamp.comodoca.com/authenticode" "$(TargetPath)"
-copy "$(ProjectDir)AlignTag.addin" "$(AppData)\Autodesk\REVIT\Addins\2018"
-copy "$(ProjectDir)bin\debug\AlignTag.dll" "$(AppData)\Autodesk\REVIT\Addins\2018"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -155,9 +155,9 @@ namespace AlignTag
         private static void CreateDirectShape(Document doc, Solid solid, Color color, string paramValue)
         {
             OverrideGraphicSettings ogs = new OverrideGraphicSettings();
-            ogs.SetProjectionFillColor(color); //new Color(0,255,0)
-            ogs.SetProjectionFillPatternId(new ElementId(4));
-            ogs.SetProjectionFillPatternVisible(true);
+            //ogs.SetProjectionFillColor(color); //new Color(0,255,0)
+            //ogs.SetProjectionFillPatternId(new ElementId(4));
+            //ogs.SetProjectionFillPatternVisible(true);
 
             // create direct shape and assign the sphere shape
             DirectShape dsmax = DirectShape.CreateElement(doc, new ElementId(BuiltInCategory.OST_GenericModel));

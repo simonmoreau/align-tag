@@ -72,6 +72,7 @@ If you'd like to request a new function, feel free to do so by opening an issue 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 # Contact information
+
 This software is an open-source project mostly maintained by myself, Simon Moreau. If you have any questions or request, feel free to contact me at [simon@bim42.com](mailto:simon@bim42.com) or on Twitter [@bim42](https://twitter.com/bim42?lang=en).
 
 # Revision list
