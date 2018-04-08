@@ -76,4 +76,9 @@ This software is an open-source project mostly maintained by myself, Simon Morea
 
 # Revision list
 
-Below is the list of the various revision of this plugin
+| **Version Number** | **Version Description** |
+| :-------------: |:-------------|
+1.3.0|Add support for every Revit element. Align every element according to its bounding box. Bug fix. Support for Autodesk® Revit® 2018 Version.
+1.2.0|Add support for Text, Keynote Tag, Room and Space Tags. Align every tag according to its bounding box. Add Align Center and Align Middle. Support for Autodesk® Revit® 2017 Version.
+1.1.0|Support for Autodesk® Revit® 2016 Version. Add the Arrange Tags feature.
+1.0.0|First Release
