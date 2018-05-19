@@ -42,11 +42,28 @@ namespace AlignTag
                 _ownerView = _doc.ActiveView;
             }
 
-            BoundingBoxXYZ elementBBox = e.get_BoundingBox(_ownerView);
-            Transform ownerViewTransform = _ownerView.CropBox.Transform;
+            //Create the view plan
+            Plane viewPlane = Plane.CreateByNormalAndOrigin(_ownerView.ViewDirection, _ownerView.Origin);
 
-            XYZ max = ownerViewTransform.Inverse.OfPoint(elementBBox.Max);
-            XYZ min = ownerViewTransform.Inverse.OfPoint(elementBBox.Min);
+            BoundingBoxXYZ elementBBox = e.get_BoundingBox(_ownerView);
+            
+            XYZ globalMax = elementBBox.Max;
+            XYZ globalMin = elementBBox.Min;
+            double distanceProjected = ProjectedDistance(viewPlane, globalMax, globalMin);
+
+            XYZ alternateMax = new XYZ(globalMax.X, globalMin.Y, globalMax.Z);
+            XYZ alternateMin = new XYZ(globalMin.X, globalMax.Y, globalMin.Z);
+            double alternateDistanceProjected = ProjectedDistance(viewPlane, alternateMax, alternateMin);
+
+            if (alternateDistanceProjected > distanceProjected)
+            {
+                globalMax = alternateMax;
+                globalMin = alternateMin;
+            }
+
+            Transform ownerViewTransform = _ownerView.CropBox.Transform;
+            XYZ max = ownerViewTransform.Inverse.OfPoint(globalMax); //Max in the coordinate space of the view
+            XYZ min = ownerViewTransform.Inverse.OfPoint(globalMin); //Min in the coordinate space of the view
 
             UpLeft = new XYZ(GetMin(min.X, max.X), GetMax(max.Y, min.Y), 0);
             UpRight = new XYZ(GetMax(min.X, max.X), GetMax(max.Y, min.Y), 0);
@@ -54,6 +71,17 @@ namespace AlignTag
             DownRight = new XYZ(GetMax(min.X, max.X), GetMin(max.Y, min.Y), 0);
 
             Center = (UpRight + DownLeft) / 2;
+        }
+
+        private double ProjectedDistance(Plane plane, XYZ pointA, XYZ pointB)
+        {
+            UV UVA = new UV();
+            UV UVB = new UV();
+
+            plane.Project(pointA, out UVA, out double d);
+            plane.Project(pointB, out UVB, out d);
+
+            return UVA.DistanceTo(UVB);
         }
 
         private double GetMax(double value1, double value2)
