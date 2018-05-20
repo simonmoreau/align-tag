@@ -99,6 +99,17 @@ namespace AlignTag
         }
     }
 
+    [Transaction(TransactionMode.Manual)]
+    class Untangle : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            Align align = new Align();
+
+            return align.AlignElements(commandData, ref message, AlignType.Untangle);
+        }
+    }
+
     //[Transaction(TransactionMode.Manual)]
     //class Arrange : IExternalCommand
     //{

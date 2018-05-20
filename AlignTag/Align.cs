@@ -168,6 +168,7 @@ namespace AlignTag
 
                 tx.Start("Align Tags");
 
+
                 if (annotationElements.Count > 1)
                 {
                     View currentView = doc.ActiveView;
@@ -257,6 +258,17 @@ namespace AlignTag
                                 XYZ resultingPoint = new XYZ(leftAnnotation.Center.X + i * spacing, annotationElement.Center.Y, 0);
                                 annotationElement.MoveTo(resultingPoint, AlignType.Horizontaly);
                                 i++;
+                            }
+                            break;
+                        case AlignType.Untangle:
+                            sortedAnnotationElements = annotationElements.OrderBy(y => y.GetLeaderEnd().Y).ToList();
+                            upperAnnotation = sortedAnnotationElements.FirstOrDefault();
+                            spacing = 0;
+                            foreach (AnnotationElement annotationElement in sortedAnnotationElements)
+                            {
+                                XYZ resultingPoint = new XYZ(annotationElement.UpLeft.X, upperAnnotation.UpLeft.Y + spacing, 0);
+                                annotationElement.MoveTo(resultingPoint, AlignType.Untangle);
+                                spacing = spacing + (annotationElement.UpLeft.Y - annotationElement.DownLeft.Y);
                             }
                             break;
                         default:

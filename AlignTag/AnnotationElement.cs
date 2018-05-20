@@ -46,7 +46,7 @@ namespace AlignTag
             Plane viewPlane = Plane.CreateByNormalAndOrigin(_ownerView.ViewDirection, _ownerView.Origin);
 
             BoundingBoxXYZ elementBBox = e.get_BoundingBox(_ownerView);
-            
+
             XYZ globalMax = elementBBox.Max;
             XYZ globalMin = elementBBox.Min;
             double distanceProjected = ProjectedDistance(viewPlane, globalMax, globalMin);
@@ -71,6 +71,7 @@ namespace AlignTag
             DownRight = new XYZ(GetMax(min.X, max.X), GetMin(max.Y, min.Y), 0);
 
             Center = (UpRight + DownLeft) / 2;
+
         }
 
         private double ProjectedDistance(Plane plane, XYZ pointA, XYZ pointB)
@@ -108,6 +109,53 @@ namespace AlignTag
             }
         }
 
+        public XYZ GetLeaderEnd()
+        {
+            XYZ LeaderEnd = new XYZ();
+            Element e = this.Parent;
+            //Find the leader end, if any
+            if (e.GetType() == typeof(IndependentTag))
+            {
+                IndependentTag tag = e as IndependentTag;
+                if (tag.HasLeader)
+                {
+                    if (tag.LeaderEndCondition == LeaderEndCondition.Free)
+                    {
+                        LeaderEnd = tag.LeaderEnd;
+                    }
+                    else
+                    {
+                        Element taggedElement = TagLeader.GetTaggedElement(_doc, tag);
+                        LeaderEnd = TagLeader.GetLeaderEnd(taggedElement, _ownerView);
+                    }
+                }
+            }
+            else if (e.GetType() == typeof(TextNote))
+            {
+                TextNote note = e as TextNote;
+                if (note.LeaderCount != 0)
+                {
+                    LeaderEnd = note.GetLeaders().FirstOrDefault().End;
+                }
+
+            }
+            else if (e.GetType().IsSubclassOf(typeof(SpatialElementTag)))
+            {
+                SpatialElementTag tag = e as SpatialElementTag;
+
+                if (tag.HasLeader)
+                {
+                    LeaderEnd = tag.LeaderEnd;
+                }
+            }
+            else
+            {
+                LeaderEnd = Center;
+            }
+
+            return LeaderEnd;
+        }
+
         public void MoveTo(XYZ point, AlignType alignType)
         {
             XYZ displacementVector = new XYZ();
@@ -137,6 +185,9 @@ namespace AlignTag
                     break;
                 case AlignType.Horizontaly:
                     displacementVector = point - Center;
+                    break;
+                case AlignType.Untangle:
+                    displacementVector = point - UpLeft;
                     break;
                 default:
                     break;
@@ -235,7 +286,7 @@ namespace AlignTag
         }
     }
 
-    enum AlignType { Left, Right, Up, Down, Center, Middle, Verticaly, Horizontaly };
+    enum AlignType { Left, Right, Up, Down, Center, Middle, Verticaly, Horizontaly, Untangle };
 
     class OffsetedElement
     {
