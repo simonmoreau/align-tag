@@ -253,10 +253,22 @@ namespace AlignTag
             _currentView = _doc.GetElement(tag.OwnerViewId) as View;
             _tag = tag;
 
-            _taggedElement = GetTaggedElement();
+            _taggedElement = GetTaggedElement(_doc,_tag);
             _tagHeadPosition = _currentView.CropBox.Transform.Inverse.OfPoint(tag.TagHeadPosition);
             _tagHeadPosition = new XYZ(_tagHeadPosition.X, _tagHeadPosition.Y, 0);
-            _leaderEnd = GetLeaderEnd();
+            _leaderEnd = GetLeaderEnd(_taggedElement,_currentView);
+
+            //View center
+            XYZ viewCenter = (_currentView.CropBox.Max + _currentView.CropBox.Min) / 2;
+            if (viewCenter.X > _leaderEnd.X)
+            {
+                _side = ViewSides.Left;
+            }
+            else
+            {
+                _side = ViewSides.Right;
+            }
+
             GetTagDimension();
         }
 
@@ -344,24 +356,6 @@ namespace AlignTag
             get { return _tagWidth; }
         }
 
-        private Element GetTaggedElement()
-        {
-            Element taggedElement;
-            if (_tag.TaggedElementId.HostElementId == ElementId.InvalidElementId)
-            {
-                RevitLinkInstance linkInstance = _doc.GetElement(_tag.TaggedElementId.LinkInstanceId) as RevitLinkInstance;
-                Document linkedDocument = linkInstance.GetLinkDocument();
-
-                taggedElement = linkedDocument.GetElement(_tag.TaggedElementId.LinkedElementId);
-            }
-            else
-            {
-                taggedElement = _doc.GetElement(_tag.TaggedElementId.HostElementId);
-            }
-
-            return taggedElement;
-        }
-
         private void GetTagDimension()
         {
             BoundingBoxXYZ bbox = _tag.get_BoundingBox(_currentView);
@@ -374,40 +368,51 @@ namespace AlignTag
             _headOffset = _tagHeadPosition - _tagCenter;
         }
 
-        private XYZ GetLeaderEnd()
+        public static Element GetTaggedElement(Document doc, IndependentTag tag)
         {
-            BoundingBoxXYZ bbox = _taggedElement.get_BoundingBox(_currentView);
-            BoundingBoxXYZ viewBox = _currentView.CropBox;
+            Element taggedElement;
+            if (tag.TaggedElementId.HostElementId == ElementId.InvalidElementId)
+            {
+                RevitLinkInstance linkInstance = doc.GetElement(tag.TaggedElementId.LinkInstanceId) as RevitLinkInstance;
+                Document linkedDocument = linkInstance.GetLinkDocument();
+
+                taggedElement = linkedDocument.GetElement(tag.TaggedElementId.LinkedElementId);
+            }
+            else
+            {
+                taggedElement = doc.GetElement(tag.TaggedElementId.HostElementId);
+            }
+
+            return taggedElement;
+        }
+
+        public static XYZ GetLeaderEnd(Element taggedElement, View currentView)
+        {
+            BoundingBoxXYZ bbox = taggedElement.get_BoundingBox(currentView);
+            BoundingBoxXYZ viewBox = currentView.CropBox;
 
             //Retrive leader end
-            XYZ leaderStart = new XYZ();
+            XYZ leaderEnd = new XYZ();
             if (bbox != null)
             {
-                leaderStart = (bbox.Max + bbox.Min) / 2;
+                leaderEnd = (bbox.Max + bbox.Min) / 2;
             }
             else
             {
-                leaderStart = (viewBox.Max + viewBox.Min) / 2 + new XYZ(0.001, 0, 0);
+                leaderEnd = (viewBox.Max + viewBox.Min) / 2 + new XYZ(0.001, 0, 0);
             }
+
+            //Export Data
+            string path = @"C:\Users\Simon\Desktop\WIP\boundingBox.txt";
+            List<string> lines = new List<string>();
+            lines.Add($"{taggedElement.Id.IntegerValue.ToString()},{leaderEnd.X},{leaderEnd.Y},{leaderEnd.Z}");
+            System.IO.File.AppendAllLines(path, lines);
 
             //Get leader end in view reference
-            leaderStart = viewBox.Transform.Inverse.OfPoint(leaderStart);
-            leaderStart = new XYZ(Math.Round(leaderStart.X,4), Math.Round(leaderStart.Y,4) ,0);
+            leaderEnd = viewBox.Transform.Inverse.OfPoint(leaderEnd);
+            leaderEnd = new XYZ(Math.Round(leaderEnd.X,4), Math.Round(leaderEnd.Y,4) ,0);
 
-            //View center
-            XYZ viewCenter = (viewBox.Max + viewBox.Min) / 2;
-
-            if (viewCenter.X > leaderStart.X)
-            {
-                _side = ViewSides.Left;
-            }
-            else
-            {
-                _side = ViewSides.Right;
-            }
-
-
-            return leaderStart;
+            return leaderEnd;
         }
 
         public void UpdateTagPosition()
