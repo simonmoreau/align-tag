@@ -130,6 +130,10 @@
     <EmbeddedResource Include="Resources\AlignMiddleLarge.png" />
     <EmbeddedResource Include="Resources\AlignMiddleSmall.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\UntangleLarge.png" />
+    <EmbeddedResource Include="Resources\UntangleSmall.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterClean">
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.addin" />
