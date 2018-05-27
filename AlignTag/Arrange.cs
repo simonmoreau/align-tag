@@ -402,12 +402,6 @@ namespace AlignTag
                 leaderEnd = (viewBox.Max + viewBox.Min) / 2 + new XYZ(0.001, 0, 0);
             }
 
-            //Export Data
-            string path = @"C:\Users\Simon\Desktop\WIP\boundingBox.txt";
-            List<string> lines = new List<string>();
-            lines.Add($"{taggedElement.Id.IntegerValue.ToString()},{leaderEnd.X},{leaderEnd.Y},{leaderEnd.Z}");
-            System.IO.File.AppendAllLines(path, lines);
-
             //Get leader end in view reference
             leaderEnd = viewBox.Transform.Inverse.OfPoint(leaderEnd);
             leaderEnd = new XYZ(Math.Round(leaderEnd.X,4), Math.Round(leaderEnd.Y,4) ,0);
