@@ -180,13 +180,16 @@ namespace AlignTag
                 case AlignType.Middle:
                     displacementVector = point - Center;
                     break;
-                case AlignType.Verticaly:
+                case AlignType.Vertically:
                     displacementVector = point - Center;
                     break;
-                case AlignType.Horizontaly:
+                case AlignType.Horizontally:
                     displacementVector = point - Center;
                     break;
-                case AlignType.Untangle:
+                case AlignType.UntangleVertically:
+                    displacementVector = point - UpLeft;
+                    break;
+                case AlignType.UntangleHorizontally:
                     displacementVector = point - UpLeft;
                     break;
                 default:

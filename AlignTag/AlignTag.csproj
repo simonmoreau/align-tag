@@ -131,8 +131,10 @@
     <EmbeddedResource Include="Resources\AlignMiddleSmall.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\UntangleLarge.png" />
-    <EmbeddedResource Include="Resources\UntangleSmall.png" />
+    <EmbeddedResource Include="Resources\UntangleHorizontallyLarge.png" />
+    <EmbeddedResource Include="Resources\UntangleHorizontallySmall.png" />
+    <EmbeddedResource Include="Resources\UntangleVerticallyLarge.png" />
+    <EmbeddedResource Include="Resources\UntangleVerticallySmall.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterClean">

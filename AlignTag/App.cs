@@ -107,17 +107,24 @@ namespace AlignTag
             arrangeButton.Image = RetriveImage("AlignTag.Resources.ArrangeSmall.png");
             arrangeButton.SetContextualHelp(help);
 
-            //Add Arrange Button
-            PushButtonData untangleButton = new PushButtonData("UntangleButton", "Untangle", DllPath, "AlignTag.Untangle");
-            untangleButton.ToolTip = "Untangle Tags or Elements ";
-            untangleButton.LargeImage = RetriveImage("AlignTag.Resources.UntangleLarge.png");
-            untangleButton.Image = RetriveImage("AlignTag.Resources.UntangleSmall.png");
-            untangleButton.SetContextualHelp(help);
+            //Add Untangle Vertically Button
+            PushButtonData untangleVerticallyButton = new PushButtonData("UntangleVerticallyButton", "Untangle\nVertically", DllPath, "AlignTag.UntangleVertically");
+            untangleVerticallyButton.ToolTip = "Untangle Vertically Tags or Elements ";
+            untangleVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.UntangleVerticallyLarge.png");
+            untangleVerticallyButton.Image = RetriveImage("AlignTag.Resources.UntangleVerticallySmall.png");
+            untangleVerticallyButton.SetContextualHelp(help);
+
+            //Add Untangle Horizontally Button
+            PushButtonData untangleHorizontallyButton = new PushButtonData("UntangleHorizontallyButton", "Untangle\nHorizontally", DllPath, "AlignTag.UntangleHorizontally");
+            untangleHorizontallyButton.ToolTip = "Untangle Horizontally Tags or Elements ";
+            untangleHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.UntangleHorizontallyLarge.png");
+            untangleHorizontallyButton.Image = RetriveImage("AlignTag.Resources.UntangleHorizontallySmall.png");
+            untangleHorizontallyButton.SetContextualHelp(help);
 
             bim42Panel.AddStackedItems(alignLeftButton, alignCenterButton, alignRightButton);
             bim42Panel.AddStackedItems(alignTopButton, alignMiddleButton, alignBottomButton);
             bim42Panel.AddStackedItems(distributeHorizontallyButton, distributeVerticallyButton, arrangeButton);
-            bim42Panel.AddItem(untangleButton);
+            bim42Panel.AddStackedItems(untangleVerticallyButton, untangleHorizontallyButton);
 
         }
 

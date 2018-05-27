@@ -84,7 +84,7 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, AlignType.Horizontaly);
+            return align.AlignElements(commandData, ref message, AlignType.Horizontally);
         }
     }
 
@@ -95,18 +95,29 @@ namespace AlignTag
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, AlignType.Verticaly);
+            return align.AlignElements(commandData, ref message, AlignType.Vertically);
         }
     }
 
     [Transaction(TransactionMode.Manual)]
-    class Untangle : IExternalCommand
+    class UntangleVertically : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             Align align = new Align();
 
-            return align.AlignElements(commandData, ref message, AlignType.Untangle);
+            return align.AlignElements(commandData, ref message, AlignType.UntangleVertically);
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
+    class UntangleHorizontally : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            Align align = new Align();
+
+            return align.AlignElements(commandData, ref message, AlignType.UntangleHorizontally);
         }
     }
 

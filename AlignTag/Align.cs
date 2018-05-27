@@ -234,7 +234,7 @@ namespace AlignTag
                                 annotationElement.MoveTo(resultingPoint, AlignType.Middle);
                             }
                             break;
-                        case AlignType.Verticaly:
+                        case AlignType.Vertically:
                             sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.Y).ToList();
                             upperAnnotation = sortedAnnotationElements.LastOrDefault();
                             lowerAnnotation = sortedAnnotationElements.FirstOrDefault();
@@ -243,11 +243,11 @@ namespace AlignTag
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
                                 XYZ resultingPoint = new XYZ(annotationElement.Center.X, lowerAnnotation.Center.Y + i * spacing, 0);
-                                annotationElement.MoveTo(resultingPoint, AlignType.Verticaly);
+                                annotationElement.MoveTo(resultingPoint, AlignType.Vertically);
                                 i++;
                             }
                             break;
-                        case AlignType.Horizontaly:
+                        case AlignType.Horizontally:
                             sortedAnnotationElements = annotationElements.OrderBy(x => x.UpRight.X).ToList();
                             rightAnnotation = sortedAnnotationElements.LastOrDefault();
                             leftAnnotation = sortedAnnotationElements.FirstOrDefault();
@@ -256,19 +256,30 @@ namespace AlignTag
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
                                 XYZ resultingPoint = new XYZ(leftAnnotation.Center.X + i * spacing, annotationElement.Center.Y, 0);
-                                annotationElement.MoveTo(resultingPoint, AlignType.Horizontaly);
+                                annotationElement.MoveTo(resultingPoint, AlignType.Horizontally);
                                 i++;
                             }
                             break;
-                        case AlignType.Untangle:
+                        case AlignType.UntangleVertically:
                             sortedAnnotationElements = annotationElements.OrderBy(y => y.GetLeaderEnd().Y).ToList();
                             upperAnnotation = sortedAnnotationElements.FirstOrDefault();
                             spacing = 0;
                             foreach (AnnotationElement annotationElement in sortedAnnotationElements)
                             {
                                 XYZ resultingPoint = new XYZ(annotationElement.UpLeft.X, upperAnnotation.UpLeft.Y + spacing, 0);
-                                annotationElement.MoveTo(resultingPoint, AlignType.Untangle);
+                                annotationElement.MoveTo(resultingPoint, AlignType.UntangleVertically);
                                 spacing = spacing + (annotationElement.UpLeft.Y - annotationElement.DownLeft.Y);
+                            }
+                            break;
+                        case AlignType.UntangleHorizontally:
+                            sortedAnnotationElements = annotationElements.OrderBy(x => x.GetLeaderEnd().X).ToList();
+                            leftAnnotation = sortedAnnotationElements.FirstOrDefault();
+                            spacing = 0;
+                            foreach (AnnotationElement annotationElement in sortedAnnotationElements)
+                            {
+                                XYZ resultingPoint = new XYZ(leftAnnotation.UpLeft.X + spacing, annotationElement.UpLeft.Y, 0);
+                                annotationElement.MoveTo(resultingPoint, AlignType.UntangleHorizontally);
+                                spacing = spacing + (annotationElement.UpRight.X - annotationElement.UpLeft.X);
                             }
                             break;
                         default:
