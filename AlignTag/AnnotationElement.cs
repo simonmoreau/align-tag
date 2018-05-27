@@ -76,13 +76,23 @@ namespace AlignTag
 
         private double ProjectedDistance(Plane plane, XYZ pointA, XYZ pointB)
         {
-            UV UVA = new UV();
-            UV UVB = new UV();
-
-            plane.Project(pointA, out UVA, out double d);
-            plane.Project(pointB, out UVB, out d);
+            //To be tested
+            XYZ UVA = ProjectionOnPlane(pointA, plane);
+            XYZ UVB = ProjectionOnPlane(pointB, plane);
 
             return UVA.DistanceTo(UVB);
+        }
+
+        private XYZ ProjectionOnPlane(XYZ q, Plane plane)
+        {
+            //The projection of a point q = (x, y, z) onto a plane given by a point p = (a, b, c) and a normal n = (d, e, f) is
+            //    q_proj = q - dot(q - p, n) * n
+
+            XYZ p = plane.Origin;
+            XYZ n = plane.Normal.Normalize();
+            XYZ q_proj = q - n.Multiply(n.DotProduct(q - p));
+
+            return q_proj;
         }
 
         private double GetMax(double value1, double value2)
@@ -111,7 +121,7 @@ namespace AlignTag
 
         public XYZ GetLeaderEnd()
         {
-            XYZ LeaderEnd = new XYZ();
+            XYZ LeaderEnd = this.Center;
             Element e = this.Parent;
             //Find the leader end, if any
             if (e.GetType() == typeof(IndependentTag))
@@ -289,7 +299,7 @@ namespace AlignTag
         }
     }
 
-    enum AlignType { Left, Right, Up, Down, Center, Middle, Verticaly, Horizontaly, Untangle };
+    enum AlignType { Left, Right, Up, Down, Center, Middle, Vertically, Horizontally, UntangleVertically, UntangleHorizontally };
 
     class OffsetedElement
     {
