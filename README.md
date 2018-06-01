@@ -69,7 +69,7 @@ If you'd like to request a new function, feel free to do so by opening an issue 
 
 # License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
 
 # Contact information
 
