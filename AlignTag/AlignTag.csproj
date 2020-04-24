@@ -11,7 +11,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AlignTag</RootNamespace>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -24,7 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
-    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2020\Revit.exe</StartProgram>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,16 +34,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
-    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2020\Revit.exe</StartProgram>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="RevitAPI">
-      <HintPath>$(ProgramW6432)\Autodesk\Revit 2020\RevitAPI.dll</HintPath>
+      <HintPath>$(ProgramW6432)\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>$(ProgramW6432)\Autodesk\Revit 2020\RevitAPIUI.dll</HintPath>
+      <HintPath>$(ProgramW6432)\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -147,7 +147,15 @@ set SigntoolPath="C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64\si
 call %25SigntoolPath%25 sign /sha1 3b428f7d77548f2f10a204bd551da1c3ede7c0e7 /d "%25SolutioName%25" /du "http://www.eai.fr" /t "http://timestamp.comodoca.com/authenticode" /fd sha256 "$(TargetPath)"
 
 set ReleasePath="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current"
-set ReleaseZip = "G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current\Align.zip"
-if exist %25ReleasePath%25 7z a -tzip "G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current\Align.zip" "$(TargetPath)" "$(SolutionDir)AlignTag\AlignTag.addin"</PostBuildEvent>
+set ReleaseZip="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current\Align.zip"
+if exist %25ReleasePath%25 7z a -tzip $ReleaseZip "$(TargetPath)" "$(SolutionDir)AlignTag\AlignTag.addin"
+
+set versions=2018 2019 2020 2021
+
+for %25%25f in (%25versions%25) do (
+    if exist "$(AppData)\Autodesk\REVIT\Addins\%25%25f" copy "$(ProjectDir)*.addin" "$(AppData)\Autodesk\REVIT\Addins\%25%25f"
+    if exist "$(AppData)\Autodesk\REVIT\Addins\%25%25f" copy "$(TargetPath)" "$(AppData)\Autodesk\REVIT\Addins\%25%25f"
+    echo ".dll copied to $(AppData)\Autodesk\REVIT\Addins\%25%25f"
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>
