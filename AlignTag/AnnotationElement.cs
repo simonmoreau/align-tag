@@ -299,7 +299,7 @@ namespace AlignTag
         }
     }
 
-    enum AlignType { Left, Right, Up, Down, Center, Middle, Vertically, Horizontally, UntangleVertically, UntangleHorizontally };
+    public enum AlignType { Left, Right, Up, Down, Center, Middle, Vertically, Horizontally, UntangleVertically, UntangleHorizontally };
 
     class OffsetedElement
     {

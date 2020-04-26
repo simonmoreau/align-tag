@@ -142,7 +142,7 @@
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>set SolutionName=Align
+    <PostBuildEvent>set SolutionName=Revit.TestRunner
 set SigntoolPath="C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x64\signtool.exe"
 call %25SigntoolPath%25 sign /sha1 3b428f7d77548f2f10a204bd551da1c3ede7c0e7 /d "%25SolutioName%25" /du "http://www.eai.fr" /t "http://timestamp.comodoca.com/authenticode" /fd sha256 "$(TargetPath)"
 
@@ -152,10 +152,10 @@ if exist %25ReleasePath%25 7z a -tzip $ReleaseZip "$(TargetPath)" "$(SolutionDir
 
 set versions=2018 2019 2020 2021
 
-for %25%25f in (%25versions%25) do (
+    for %25%25f in (%25versions%25) do (
     if exist "$(AppData)\Autodesk\REVIT\Addins\%25%25f" copy "$(ProjectDir)*.addin" "$(AppData)\Autodesk\REVIT\Addins\%25%25f"
     if exist "$(AppData)\Autodesk\REVIT\Addins\%25%25f" copy "$(TargetPath)" "$(AppData)\Autodesk\REVIT\Addins\%25%25f"
     echo ".dll copied to $(AppData)\Autodesk\REVIT\Addins\%25%25f"
-)</PostBuildEvent>
+    )</PostBuildEvent>
   </PropertyGroup>
 </Project>
