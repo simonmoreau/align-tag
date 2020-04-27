@@ -152,6 +152,47 @@ namespace Align.Test
             AlignTestFunction(ids, AlignTag.AlignType.Vertically);
         }
 
+        [Test]
+        public void AlignRoomTagTop()
+        {
+            int[] ids = new int[] { 205282, 205285 };
+            AlignTestFunction(ids, AlignTag.AlignType.Up);
+        }
+
+        [Test]
+        public void AlignRoomTagBottom()
+        {
+            int[] ids = new int[] { 205288, 205291, 205294 };
+            AlignTestFunction(ids, AlignTag.AlignType.Down);
+        }
+
+        [Test]
+        public void AlignSpaceTagTop()
+        {
+            int[] ids = new int[] { 205654, 205655 };
+            AlignTestFunction(ids, AlignTag.AlignType.Up);
+        }
+
+        [Test]
+        public void AlignSpaceTagBottom()
+        {
+            int[] ids = new int[] { 205656, 205657, 205658 };
+            AlignTestFunction(ids, AlignTag.AlignType.Down);
+        }
+
+        [Test]
+        public void AlignTextNoteRight()
+        {
+            int[] ids = new int[] { 205777, 205811, 205819 };
+            AlignTestFunction(ids, AlignTag.AlignType.Right);
+        }
+
+        [Test]
+        public void AlignTextNoteVerticaly()
+        {
+            int[] ids = new int[] { 205832, 205838, 205839 };
+            AlignTestFunction(ids, AlignTag.AlignType.Vertically);
+        }
 
         private void AlignTestFunction(int[] ids, AlignTag.AlignType alignType)
         {

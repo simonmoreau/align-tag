@@ -148,11 +148,10 @@ call %25SigntoolPath%25 sign /sha1 3b428f7d77548f2f10a204bd551da1c3ede7c0e7 /d "
 
 set ReleasePath="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current"
 set ReleaseZip="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current\Align.zip"
-if exist %25ReleasePath%25 7z a -tzip $ReleaseZip "$(TargetPath)" "$(SolutionDir)AlignTag\AlignTag.addin"
+if exist %25ReleasePath%25 7z a -tzip %25ReleaseZip%25 "$(TargetPath)" "$(SolutionDir)AlignTag\AlignTag.addin"
 
-
-# set versions=2018 2019 2020 2021
-set version = 1
+set versions=2018 2019 2020 2021
+# set version = 1
 
     for %25%25f in (%25versions%25) do (
     if exist "$(AppData)\Autodesk\REVIT\Addins\%25%25f" copy "$(ProjectDir)*.addin" "$(AppData)\Autodesk\REVIT\Addins\%25%25f"
