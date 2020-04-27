@@ -27,8 +27,9 @@ namespace AlignTag
         private Document _doc;
         private View _ownerView;
 
-        public AnnotationElement(Element e)
+        public AnnotationElement(PreparationElement preparationElement)
         {
+            Element e = preparationElement.Element;
             Parent = e;
             _doc = e.Document;
 
@@ -49,6 +50,13 @@ namespace AlignTag
 
             XYZ globalMax = elementBBox.Max;
             XYZ globalMin = elementBBox.Min;
+
+            if (preparationElement.DisplacementVector != null)
+            {
+                globalMax = elementBBox.Max - preparationElement.DisplacementVector;
+                globalMin = elementBBox.Min - preparationElement.DisplacementVector;
+            }
+
             double distanceProjected = ProjectedDistance(viewPlane, globalMax, globalMin);
 
             XYZ alternateMax = new XYZ(globalMax.X, globalMin.Y, globalMax.Z);
@@ -72,6 +80,18 @@ namespace AlignTag
 
             Center = (UpRight + DownLeft) / 2;
 
+        }
+
+        public override string ToString()
+        {
+            string[] Valueparams = new string[] {Parent.Id.ToString(),
+                UpLeft.X.ToString(), UpLeft.Y.ToString(), UpLeft.Z.ToString(),
+                UpRight.X.ToString(), UpRight.Y.ToString(), UpRight.Z.ToString(),
+                DownLeft.X.ToString(), DownLeft.Y.ToString(), DownLeft.Z.ToString(),
+                DownRight.X.ToString(), DownRight.Y.ToString(), DownRight.Z.ToString(),
+                Center.X.ToString(), Center.Y.ToString(), Center.Z.ToString() };
+
+            return String.Join(",", Valueparams);
         }
 
         private double ProjectedDistance(Plane plane, XYZ pointA, XYZ pointB)
@@ -168,110 +188,118 @@ namespace AlignTag
 
         public void MoveTo(XYZ point, AlignType alignType)
         {
-            XYZ displacementVector = new XYZ();
-
-            switch (alignType)
+            if (!Parent.Pinned)
             {
-                case AlignType.Left:
-                    displacementVector = point - UpLeft;
-                    break;
-                case AlignType.Right:
-                    displacementVector = point - UpRight;
-                    break;
-                case AlignType.Up:
-                    displacementVector = point - UpRight;
-                    break;
-                case AlignType.Down:
-                    displacementVector = point - DownRight;
-                    break;
-                case AlignType.Center:
-                    displacementVector = point - Center;
-                    break;
-                case AlignType.Middle:
-                    displacementVector = point - Center;
-                    break;
-                case AlignType.Vertically:
-                    displacementVector = point - Center;
-                    break;
-                case AlignType.Horizontally:
-                    displacementVector = point - Center;
-                    break;
-                case AlignType.UntangleVertically:
-                    displacementVector = point - UpLeft;
-                    break;
-                case AlignType.UntangleHorizontally:
-                    displacementVector = point - UpLeft;
-                    break;
-                default:
-                    break;
-            }
+                XYZ displacementVector = new XYZ();
 
-            Transform tr = Transform.CreateTranslation(_ownerView.CropBox.Transform.OfVector(displacementVector));
-
-            if (Parent.GetType() == typeof(IndependentTag))
-            {
-                IndependentTag tag = Parent as IndependentTag;
-                CustomLeader leader = new CustomLeader();
-                if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
+                switch (alignType)
                 {
-
-                    leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+                    case AlignType.Left:
+                        displacementVector = point - UpLeft;
+                        break;
+                    case AlignType.Right:
+                        displacementVector = point - UpRight;
+                        break;
+                    case AlignType.Up:
+                        displacementVector = point - UpRight;
+                        break;
+                    case AlignType.Down:
+                        displacementVector = point - DownRight;
+                        break;
+                    case AlignType.Center:
+                        displacementVector = point - Center;
+                        break;
+                    case AlignType.Middle:
+                        displacementVector = point - Center;
+                        break;
+                    case AlignType.Vertically:
+                        displacementVector = point - Center;
+                        break;
+                    case AlignType.Horizontally:
+                        displacementVector = point - Center;
+                        break;
+                    case AlignType.UntangleVertically:
+                        displacementVector = point - UpLeft;
+                        break;
+                    case AlignType.UntangleHorizontally:
+                        displacementVector = point - UpLeft;
+                        break;
+                    default:
+                        break;
                 }
 
-                tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
-
-                if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
+                if (!displacementVector.IsAlmostEqualTo(new XYZ(0, 0, 0)))
                 {
-                    tag.LeaderEnd = leader.End;
-                }
+                    Transform tr = Transform.CreateTranslation(_ownerView.CropBox.Transform.OfVector(displacementVector));
 
-            }
-            else if (Parent.GetType() == typeof(TextNote))
-            {
-                List<CustomLeader> leaders = new List<CustomLeader>();
-                TextNote note = Parent as TextNote;
-                if (note.LeaderCount != 0)
-                {
-                    foreach (Leader leader in note.GetLeaders())
+                    if (Parent.GetType() == typeof(IndependentTag))
                     {
-                        leaders.Add(new CustomLeader(leader));
+                        IndependentTag tag = Parent as IndependentTag;
+                        CustomLeader leader = new CustomLeader();
+                        if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
+                        {
+
+                            leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+                        }
+
+                        tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
+
+                        if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
+                        {
+                            tag.LeaderEnd = leader.End;
+                        }
+
+                    }
+                    else if (Parent.GetType() == typeof(TextNote))
+                    {
+                        List<CustomLeader> leaders = new List<CustomLeader>();
+                        TextNote note = Parent as TextNote;
+                        if (note.LeaderCount != 0)
+                        {
+                            foreach (Leader leader in note.GetLeaders())
+                            {
+                                leaders.Add(new CustomLeader(leader));
+                            }
+                        }
+
+                        note.Coord = tr.OfPoint(note.Coord);
+
+                        if (leaders.Count != 0)
+                        {
+                            int i = 0;
+                            foreach (Leader leader in note.GetLeaders())
+                            {
+                                leader.End = leaders[i].End;
+                                leader.Elbow = leaders[i].Elbow;
+                                i++;
+                            }
+                        }
+                    }
+                    else if (Parent.GetType().IsSubclassOf(typeof(SpatialElementTag)))
+                    {
+                        SpatialElementTag tag = Parent as SpatialElementTag;
+
+                        CustomLeader leader = new CustomLeader();
+                        if (tag.HasLeader)
+                        {
+                            leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+                        }
+
+                        Parent.Location.Move(_ownerView.CropBox.Transform.OfVector(displacementVector));
+
+                        if (tag.HasLeader)
+                        {
+                            tag.LeaderEnd = leader.End;
+                        }
+                    }
+                    else
+                    {
+                        Parent.Location.Move(_ownerView.CropBox.Transform.OfVector(displacementVector));
                     }
                 }
 
-                note.Coord = tr.OfPoint(note.Coord);
-
-                if (leaders.Count != 0)
-                {
-                    int i = 0;
-                    foreach (Leader leader in note.GetLeaders())
-                    {
-                        leader.End = leaders[i].End;
-                        leader.Elbow = leaders[i].Elbow;
-                        i++;
-                    }
-                }
             }
-            else if (Parent.GetType().IsSubclassOf(typeof(SpatialElementTag)))
-            {
-                SpatialElementTag tag = Parent as SpatialElementTag;
 
-                CustomLeader leader = new CustomLeader();
-                if (tag.HasLeader)
-                {
-                    leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
-                }
-
-                tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
-
-                if (tag.HasLeader)
-                {
-                    tag.LeaderEnd = leader.End;
-                }
-            }
-            else
-            {
-                Parent.Location.Move(_ownerView.CropBox.Transform.OfVector(displacementVector));
-            }
         }
     }
 
@@ -297,6 +325,17 @@ namespace AlignTag
             End = end;
             Elbow = elbow;
         }
+    }
+
+    class PreparationElement
+    {
+        public PreparationElement(Element element, XYZ displacementVector)
+        {
+            Element = element;
+            DisplacementVector = displacementVector;
+        }
+        public Element Element { get; set; }
+        public XYZ DisplacementVector { get; set; }
     }
 
     public enum AlignType { Left, Right, Up, Down, Center, Middle, Vertically, Horizontally, UntangleVertically, UntangleHorizontally };

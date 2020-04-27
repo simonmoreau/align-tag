@@ -7,6 +7,7 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using Autodesk.Revit.DB.Architecture;
 using Autodesk.Revit.DB.Mechanical;
+using System.Diagnostics;
 #endregion
 
 namespace AlignTag
@@ -95,19 +96,25 @@ namespace AlignTag
             {
                 txg.Start(AlignTypeToText(alignType));
 
+                tx.Start("Prepare tags");
+                Debug.WriteLine(DateTime.Now.ToString() + " - Start Prepare tags");
+
                 List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(document, tx, selectedIds);
 
                 txg.RollBack();
+                Debug.WriteLine(DateTime.Now.ToString() + " - Rollback Prepare tags");
+
                 txg.Start(AlignTypeToText(alignType));
 
                 tx.Start(AlignTypeToText(alignType));
-
+                Debug.WriteLine(DateTime.Now.ToString() + " - Start align tags");
 
                 if (annotationElements.Count > 1)
                 {
                     AlignAnnotationElements(annotationElements, alignType, document);
                 }
 
+                Debug.WriteLine(DateTime.Now.ToString() + " - Commit align tags");
 
                 tx.Commit();
 
@@ -117,11 +124,11 @@ namespace AlignTag
 
         private List<AnnotationElement> RetriveAnnotationElementsFromSelection(Document document, Transaction tx, ICollection<ElementId> ids)
         {
-            List<Element> elements = new List<Element>();
+            List<PreparationElement> preparationElements = new List<PreparationElement>();
 
             List<AnnotationElement> annotationElements = new List<AnnotationElement>();
 
-            tx.Start("Prepare tags");
+            
 
             //Remove all leader to find the correct tag height and width
             foreach (ElementId id in ids)
@@ -131,46 +138,55 @@ namespace AlignTag
                 if (e.GetType() == typeof(IndependentTag))
                 {
                     IndependentTag tag = e as IndependentTag;
-                    tag.LeaderEndCondition = LeaderEndCondition.Free;
+
+                    //XYZ displacementVector = null;
+                    //if (tag.LeaderEndCondition == LeaderEndCondition.Free)
+                    //{
+                    //    displacementVector = tag.LeaderEnd - tag.TagHeadPosition;
+                    //}
+
                     if (tag.HasLeader)
                     {
-                        tag.LeaderEnd = tag.TagHeadPosition;
-                        tag.LeaderElbow = tag.TagHeadPosition;
+                        tag.HasLeader = false;
                     }
 
-                    elements.Add(e);
+                    preparationElements.Add(new PreparationElement(e, null));
+
+
                 }
                 else if (e.GetType() == typeof(TextNote))
                 {
                     TextNote note = e as TextNote;
                     note.RemoveLeaders();
-                    elements.Add(e);
+                    preparationElements.Add(new PreparationElement(e, null));
                 }
                 else if (e.GetType().IsSubclassOf(typeof(SpatialElementTag)))
                 {
                     SpatialElementTag tag = e as SpatialElementTag;
 
+                    XYZ displacementVector = null;
+
                     if (tag.HasLeader)
                     {
-                        tag.LeaderEnd = tag.TagHeadPosition;
-                        tag.LeaderElbow = tag.TagHeadPosition;
+                        displacementVector = tag.LeaderEnd - tag.TagHeadPosition;
+                        tag.HasLeader = false;
                     }
-                    elements.Add(e);
+                    
+                    preparationElements.Add(new PreparationElement(e, displacementVector));
                 }
                 else
                 {
-                    elements.Add(e);
+                    preparationElements.Add(new PreparationElement(e, null));
                 }
             }
 
-
             FailureHandlingOptions options = tx.GetFailureHandlingOptions();
 
-            options.SetFailuresPreprocessor(new CommitPreprocessor());
+            options.SetFailuresPreprocessor(new TemporaryCommitPreprocessor());
             // Now, showing of any eventual mini-warnings will be postponed until the following transaction.
             tx.Commit(options);
 
-            foreach (Element e in elements)
+            foreach (PreparationElement e in preparationElements)
             {
                 annotationElements.Add(new AnnotationElement(e));
             }

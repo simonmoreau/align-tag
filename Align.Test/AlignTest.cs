@@ -97,6 +97,13 @@ namespace Align.Test
         }
 
         [Test]
+        public void AlignWallLeftWithPinned()
+        {
+            int[] ids = new int[] { 205004, 205005, 205006, 205007 };
+            AlignTestFunction(ids, AlignTag.AlignType.Left);
+        }
+
+        [Test]
         public void AlignWallRight()
         {
             int[] ids = new int[] { 202393, 202394, 202395, 202396 };

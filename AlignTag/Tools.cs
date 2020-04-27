@@ -228,7 +228,7 @@ namespace AlignTag
     /// <summary>
     /// Manage Warning in the Revit interface
     /// </summary>
-    public class CommitPreprocessor : IFailuresPreprocessor
+    public class TemporaryCommitPreprocessor : IFailuresPreprocessor
     {
         public FailureProcessingResult PreprocessFailures(FailuresAccessor failuresAccessor)
         {
