@@ -118,49 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="AlignBottomLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignBottomLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AlignBottomSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignBottomSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="AlignHelp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AlignHelp.chm;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="AlignLeftLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignLeftLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AlignLeftSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignLeftSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AlignRightLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignRightLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AlignRightSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignRightSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AlignTopLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignTopLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AlignTopSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AlignTopSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrangeLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ArrangeLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ArrangeSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ArrangeSmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DistributeHorizontallyLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DistributeHorizontallyLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DistributeHorizontallySmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DistributeHorizontallySmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DistributeVerticallyLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DistributeVerticallyLarge.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="DistributeVerticallySmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\DistributeVerticallySmall.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

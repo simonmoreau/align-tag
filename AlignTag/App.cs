@@ -47,78 +47,78 @@ namespace AlignTag
             //Add Align Left Button
             PushButtonData alignLeftButton = new PushButtonData("alignLeftButton", "Align Left", DllPath, "AlignTag.AlignLeft");
             alignLeftButton.ToolTip = "Align Tags or Elements Left";
-            alignLeftButton.LargeImage = RetriveImage("AlignTag.Resources.AlignLeftLarge.png");
-            alignLeftButton.Image = RetriveImage("AlignTag.Resources.AlignLeftSmall.png");
+            alignLeftButton.LargeImage = RetriveImage("AlignTag.Resources.align-left-large.png");
+            alignLeftButton.Image = RetriveImage("AlignTag.Resources.align-left-small.png");
             alignLeftButton.SetContextualHelp(help);
 
             //Add Align Right Button
             PushButtonData alignRightButton = new PushButtonData("alignRightButton", "Align Right", DllPath, "AlignTag.AlignRight");
             alignRightButton.ToolTip = "Align Tags or Elements Right";
-            alignRightButton.LargeImage = RetriveImage("AlignTag.Resources.AlignRightLarge.png");
-            alignRightButton.Image = RetriveImage("AlignTag.Resources.AlignRightSmall.png");
+            alignRightButton.LargeImage = RetriveImage("AlignTag.Resources.align-right-large.png");
+            alignRightButton.Image = RetriveImage("AlignTag.Resources.align-right-small.png");
             alignRightButton.SetContextualHelp(help);
 
             //Add Align TOp Button
             PushButtonData alignTopButton = new PushButtonData("alignTopButton", "Align Top", DllPath, "AlignTag.AlignTop");
             alignTopButton.ToolTip = "Align Tags or Elements Top";
-            alignTopButton.LargeImage = RetriveImage("AlignTag.Resources.AlignTopLarge.png");
-            alignTopButton.Image = RetriveImage("AlignTag.Resources.AlignTopSmall.png");
+            alignTopButton.LargeImage = RetriveImage("AlignTag.Resources.align-top-large.png");
+            alignTopButton.Image = RetriveImage("AlignTag.Resources.align-top-small.png");
             alignTopButton.SetContextualHelp(help);
 
             //Add Align bottom Button
             PushButtonData alignBottomButton = new PushButtonData("alignBottomButton", "Align Bottom", DllPath, "AlignTag.AlignBottom");
             alignBottomButton.ToolTip = "Align Tags or Elements Bottom";
-            alignBottomButton.LargeImage = RetriveImage("AlignTag.Resources.AlignBottomLarge.png");
-            alignBottomButton.Image = RetriveImage("AlignTag.Resources.AlignBottomSmall.png");
+            alignBottomButton.LargeImage = RetriveImage("AlignTag.Resources.align-bottom-large.png");
+            alignBottomButton.Image = RetriveImage("AlignTag.Resources.align-bottom-small.png");
             alignBottomButton.SetContextualHelp(help);
 
             //Add Align Center Button
             PushButtonData alignCenterButton = new PushButtonData("alignCenterButton", "Align Center", DllPath, "AlignTag.AlignCenter");
             alignCenterButton.ToolTip = "Align Tags or Elements Center";
-            alignCenterButton.LargeImage = RetriveImage("AlignTag.Resources.AlignCenterLarge.png");
-            alignCenterButton.Image = RetriveImage("AlignTag.Resources.AlignCenterSmall.png");
+            alignCenterButton.LargeImage = RetriveImage("AlignTag.Resources.align-center-large.png");
+            alignCenterButton.Image = RetriveImage("AlignTag.Resources.align-center-small.png");
             alignCenterButton.SetContextualHelp(help);
 
             //Add Align Middle Button
             PushButtonData alignMiddleButton = new PushButtonData("alignMiddleButton", "Align Middle", DllPath, "AlignTag.AlignMiddle");
             alignMiddleButton.ToolTip = "Align Tags or Elements Middle";
-            alignMiddleButton.LargeImage = RetriveImage("AlignTag.Resources.AlignMiddleLarge.png");
-            alignMiddleButton.Image = RetriveImage("AlignTag.Resources.AlignMiddleSmall.png");
+            alignMiddleButton.LargeImage = RetriveImage("AlignTag.Resources.align-middle-large.png");
+            alignMiddleButton.Image = RetriveImage("AlignTag.Resources.align-middle-small.png");
             alignMiddleButton.SetContextualHelp(help);
 
             //Add Distribute horizontally Button
             PushButtonData distributeHorizontallyButton = new PushButtonData("distributeHorizontallyButton", "Distribute\nHorizontally", DllPath, "AlignTag.DistributeHorizontally");
             distributeHorizontallyButton.ToolTip = "Distribute Tags or Elements Horizontally";
-            distributeHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.DistributeHorizontallyLarge.png");
-            distributeHorizontallyButton.Image = RetriveImage("AlignTag.Resources.DistributeHorizontallySmall.png");
+            distributeHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.distribute-horizontally-large.png");
+            distributeHorizontallyButton.Image = RetriveImage("AlignTag.Resources.distribute-horizontally-small.png");
             distributeHorizontallyButton.SetContextualHelp(help);
 
             //Add Distribute vertically Button
             PushButtonData distributeVerticallyButton = new PushButtonData("distributeVerticallyButton", "Distribute\nVertically", DllPath, "AlignTag.DistributeVertically");
             distributeVerticallyButton.ToolTip = "Distribute Tags or Elements Vertically";
-            distributeVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.DistributeVerticallyLarge.png");
-            distributeVerticallyButton.Image = RetriveImage("AlignTag.Resources.DistributeVerticallySmall.png");
+            distributeVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.distribute-vertically-large.png");
+            distributeVerticallyButton.Image = RetriveImage("AlignTag.Resources.distribute-vertically-small.png");
             distributeVerticallyButton.SetContextualHelp(help);
 
             //Add Arrange Button
             PushButtonData arrangeButton = new PushButtonData("ArrangeButton", "Arrange\nTags", DllPath, "AlignTag.Arrange");
             arrangeButton.ToolTip = "Arrange Tags around the view";
-            arrangeButton.LargeImage = RetriveImage("AlignTag.Resources.ArrangeLarge.png");
-            arrangeButton.Image = RetriveImage("AlignTag.Resources.ArrangeSmall.png");
+            arrangeButton.LargeImage = RetriveImage("AlignTag.Resources.arrange-large.png");
+            arrangeButton.Image = RetriveImage("AlignTag.Resources.arrange-small.png");
             arrangeButton.SetContextualHelp(help);
 
             //Add Untangle Vertically Button
             PushButtonData untangleVerticallyButton = new PushButtonData("UntangleVerticallyButton", "Untangle\nVertically", DllPath, "AlignTag.UntangleVertically");
             untangleVerticallyButton.ToolTip = "Untangle Vertically Tags or Elements ";
-            untangleVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.UntangleVerticallyLarge.png");
-            untangleVerticallyButton.Image = RetriveImage("AlignTag.Resources.UntangleVerticallySmall.png");
+            untangleVerticallyButton.LargeImage = RetriveImage("AlignTag.Resources.untangle-vertically-large.png");
+            untangleVerticallyButton.Image = RetriveImage("AlignTag.Resources.untangle-vertically-small.png");
             untangleVerticallyButton.SetContextualHelp(help);
 
             //Add Untangle Horizontally Button
             PushButtonData untangleHorizontallyButton = new PushButtonData("UntangleHorizontallyButton", "Untangle\nHorizontally", DllPath, "AlignTag.UntangleHorizontally");
             untangleHorizontallyButton.ToolTip = "Untangle Horizontally Tags or Elements ";
-            untangleHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.UntangleHorizontallyLarge.png");
-            untangleHorizontallyButton.Image = RetriveImage("AlignTag.Resources.UntangleHorizontallySmall.png");
+            untangleHorizontallyButton.LargeImage = RetriveImage("AlignTag.Resources.untangle-horizontally-large.png");
+            untangleHorizontallyButton.Image = RetriveImage("AlignTag.Resources.untangle-horizontally-small.png");
             untangleHorizontallyButton.SetContextualHelp(help);
 
             bim42Panel.AddStackedItems(alignLeftButton, alignCenterButton, alignRightButton);

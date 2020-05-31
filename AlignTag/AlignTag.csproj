@@ -83,58 +83,31 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignBottomLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignBottomSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignLeftLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignLeftSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignRightLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignRightSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignTopLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignTopSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\DistributeHorizontallyLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\DistributeHorizontallySmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\DistributeVerticallyLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\DistributeVerticallySmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\ArrangeLarge.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\ArrangeSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\AlignCenterLarge.png" />
-    <EmbeddedResource Include="Resources\AlignCenterSmall.png" />
-    <EmbeddedResource Include="Resources\AlignMiddleLarge.png" />
-    <EmbeddedResource Include="Resources\AlignMiddleSmall.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\UntangleHorizontallyLarge.png" />
-    <EmbeddedResource Include="Resources\UntangleHorizontallySmall.png" />
-    <EmbeddedResource Include="Resources\UntangleVerticallyLarge.png" />
-    <EmbeddedResource Include="Resources\UntangleVerticallySmall.png" />
+    <EmbeddedResource Include="Resources\align-bottom-large.png" />
+    <EmbeddedResource Include="Resources\align-bottom-small.png" />
+    <EmbeddedResource Include="Resources\align-center-large.png" />
+    <EmbeddedResource Include="Resources\align-center-small.png" />
+    <EmbeddedResource Include="Resources\align-icon-grey-background.png" />
+    <EmbeddedResource Include="Resources\align-icon-large.png" />
+    <EmbeddedResource Include="Resources\align-icon-small.png" />
+    <EmbeddedResource Include="Resources\align-left-large.png" />
+    <EmbeddedResource Include="Resources\align-left-small.png" />
+    <EmbeddedResource Include="Resources\align-middle-large.png" />
+    <EmbeddedResource Include="Resources\align-middle-small.png" />
+    <EmbeddedResource Include="Resources\align-right-large.png" />
+    <EmbeddedResource Include="Resources\align-right-small.png" />
+    <EmbeddedResource Include="Resources\align-top-large.png" />
+    <EmbeddedResource Include="Resources\align-top-small.png" />
+    <EmbeddedResource Include="Resources\arrange-large.png" />
+    <EmbeddedResource Include="Resources\arrange-small.png" />
+    <EmbeddedResource Include="Resources\distribute-horizontally-large.png" />
+    <EmbeddedResource Include="Resources\distribute-horizontally-small.png" />
+    <EmbeddedResource Include="Resources\distribute-vertically-large.png" />
+    <EmbeddedResource Include="Resources\distribute-vertically-small.png" />
+    <EmbeddedResource Include="Resources\untangle-horizontally-large.png" />
+    <EmbeddedResource Include="Resources\untangle-horizontally-small.png" />
+    <EmbeddedResource Include="Resources\untangle-vertically-large.png" />
+    <EmbeddedResource Include="Resources\untangle-vertically-small.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterClean">
