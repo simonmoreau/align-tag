@@ -2,7 +2,7 @@
 <RevitAddIns>
   <AddIn Type="Application">
     <Name>Application AlignTag</Name>
-    <Assembly>AlignTag.dll</Assembly>
+    <Assembly>AlignTag\AlignTag.dll</Assembly>
     <FullClassName>AlignTag.App</FullClassName>
     <ClientId>5a9e8c41-09d6-4cdf-8556-38f8119137a4</ClientId>
     <VendorId>BM42</VendorId>

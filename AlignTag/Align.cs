@@ -101,7 +101,8 @@ namespace AlignTag
 
                 List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(document, tx, selectedIds);
 
-                txg.RollBack();
+                // txg.RollBack();
+                txg.Assimilate();
                 Debug.WriteLine(DateTime.Now.ToString() + " - Rollback Prepare tags");
 
                 txg.Start(AlignTypeToText(alignType));
@@ -111,7 +112,7 @@ namespace AlignTag
 
                 if (annotationElements.Count > 1)
                 {
-                    AlignAnnotationElements(annotationElements, alignType, document);
+                    // AlignAnnotationElements(annotationElements, alignType, document);
                 }
 
                 Debug.WriteLine(DateTime.Now.ToString() + " - Commit align tags");
@@ -145,10 +146,10 @@ namespace AlignTag
                     //    displacementVector = tag.LeaderEnd - tag.TagHeadPosition;
                     //}
 
-                    if (tag.HasLeader)
-                    {
-                        tag.HasLeader = false;
-                    }
+                    //if (tag.HasLeader)
+                    //{
+                    //    tag.HasLeader = false;
+                    //}
 
                     preparationElements.Add(new PreparationElement(e, null));
 
