@@ -6,13 +6,12 @@ write-host $TargetPath
 write-host $TargetDir
 
 # sign the dll
-$cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert
+$thumbPrint = "e729567d4e9be8ffca04179e3375b7669bccf272"
+$cert=Get-ChildItem -Path Cert:\CurrentUser\My -CodeSigningCert | Where { $_.Thumbprint -eq $thumbPrint}
 
 Set-AuthenticodeSignature -FilePath $TargetPath -Certificate $cert -IncludeChain All -TimestampServer "http://timestamp.comodoca.com/authenticode"
 
-function CopyToAddinFolder($revitVersion) {
-	
-    $addinFolder = ($env:APPDATA + "\Autodesk\REVIT\Addins\" + $revitVersion)
+function CopyToFolder($revitVersion, $addinFolder) {
 
     if (Test-Path $addinFolder) {
         try {
@@ -20,13 +19,12 @@ function CopyToAddinFolder($revitVersion) {
             if (Test-Path ($addinFolder  + "\" + $TargetName + ".addin")) { Remove-Item ($addinFolder  + "\" + $TargetName + ".addin") }
             if (Test-Path ($addinFolder  + "\" + $TargetName)) { Remove-Item ($addinFolder  + "\" + $TargetName) -Recurse }
             
-            # create the AlignTag folder
+            # create the bimsync folder
             New-Item -ItemType Directory -Path ($addinFolder  + "\" + $TargetName)
 
             # Copy the addin file
             xcopy /Y ($ProjectDir + $TargetName + ".addin") ($addinFolder)
             xcopy /Y ($TargetDir + "\*.dll*") ($addinFolder  + "\" + $TargetName)
-            xcopy /Y ($ProjectDir + "Resources\*.chm*") ($addinFolder  + "\" + $TargetName)
         }
         catch {
             Write-Host "Something went wrong"
@@ -34,21 +32,14 @@ function CopyToAddinFolder($revitVersion) {
     }
 }
 
-$revitVersions = "2018","2019","2020","2021","2022"
+$revitVersion = $Configuration.replace('Debug','').replace('Release','')
 
-Foreach ($revitVersion in $revitVersions) {
-    CopyToAddinFolder $revitVersion
-}
+# Copy to Addin folder for debug
+$addinFolder = ($env:APPDATA + "\Autodesk\REVIT\Addins\" + $revitVersion)
+CopyToFolder $revitVersion $addinFolder
 
-## Zip the package
-$ReleasePath="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\Current"
-$addinFolder = ($env:APPDATA + "\Autodesk\REVIT\Addins\" + $revitVersions[0])
-
-$ReleaseZip = ($ReleasePath + "\" + $TargetName + ".zip")
-if (Test-Path $ReleaseZip) { Remove-Item $ReleaseZip }
-
-if ( Test-Path -Path $ReleasePath ) {
-  7z a -tzip $ReleaseZip ($ProjectDir + $TargetName + ".addin") ($addinFolder  + "\" + $TargetName)
-}
+# Copy to release folder for building the package
+$releaseFolder = ("G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\BIM 42 Align.bundle\Contents\" + $revitVersion + "\")
+CopyToFolder $revitVersion $releaseFolder
 
 
