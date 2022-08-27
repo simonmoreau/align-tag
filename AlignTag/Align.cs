@@ -102,8 +102,8 @@ namespace AlignTag
 
                 List<AnnotationElement> annotationElements = RetriveAnnotationElementsFromSelection(document, tx, selectedIds);
 
-                // txg.RollBack();
-                txg.Assimilate();
+                txg.RollBack();
+                // txg.Assimilate();
                 Debug.WriteLine(DateTime.Now.ToString() + " - Rollback Prepare tags");
 
                 txg.Start(AlignTypeToText(alignType));
@@ -130,7 +130,6 @@ namespace AlignTag
 
             List<AnnotationElement> annotationElements = new List<AnnotationElement>();
 
-            
 
             //Remove all leader to find the correct tag height and width
             foreach (ElementId id in ids)
@@ -147,10 +146,10 @@ namespace AlignTag
                     //    displacementVector = tag.LeaderEnd - tag.TagHeadPosition;
                     //}
 
-                    //if (tag.HasLeader)
-                    //{
-                    //    tag.HasLeader = false;
-                    //}
+                    if (tag.HasLeader)
+                    {
+                        tag.HasLeader = false;
+                    }
 
                     preparationElements.Add(new PreparationElement(e, null));
 
