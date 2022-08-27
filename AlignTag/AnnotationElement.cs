@@ -43,6 +43,7 @@ namespace AlignTag
                 _ownerView = _doc.ActiveView;
             }
 
+
             //Create the view plan
             Plane viewPlane = Plane.CreateByNormalAndOrigin(_ownerView.ViewDirection, _ownerView.Origin);
 
@@ -151,7 +152,12 @@ namespace AlignTag
                 {
                     if (tag.LeaderEndCondition == LeaderEndCondition.Free)
                     {
+#if Version2022 || Version2023
+                        Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
+                        if (referencedElement != null) LeaderEnd = tag.GetLeaderEnd(referencedElement);
+#elif Version2019 || Version2020 || Version2021
                         LeaderEnd = tag.LeaderEnd;
+#endif
                     }
                     else
                     {
@@ -235,18 +241,42 @@ namespace AlignTag
                     if (Parent.GetType() == typeof(IndependentTag))
                     {
                         IndependentTag tag = Parent as IndependentTag;
-                        CustomLeader leader = new CustomLeader();
+                        CustomLeader customLeader = new CustomLeader();
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
+#if Version2022 || Version2023
+                            Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
+                            if (referencedElement != null)
+                            {
+                                XYZ leaderEnd = tag.GetLeaderEnd(referencedElement);
+                                customLeader = new CustomLeader(leaderEnd, new XYZ(0, 0, 0));
+                            }
+                            else
+                            {
+                                customLeader = new CustomLeader(new XYZ(0, 0, 0), new XYZ(0, 0, 0));
+                            }
 
-                            leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+#elif Version2019 || Version2020 || Version2021
+                        leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+#endif
+
                         }
 
                         tag.TagHeadPosition = tr.OfPoint(tag.TagHeadPosition);
 
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-                            tag.LeaderEnd = leader.End;
+#if Version2022 || Version2023
+                            Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
+                            if (referencedElement != null)
+                            {
+                                tag.SetLeaderEnd(referencedElement, customLeader.End);
+                            }
+
+#elif Version2019 || Version2020 || Version2021
+                            tag.LeaderEnd = customLeader.End;
+#endif
+
                         }
 
                     }

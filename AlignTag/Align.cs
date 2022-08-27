@@ -51,6 +51,7 @@ namespace AlignTag
 
                 catch (Autodesk.Revit.Exceptions.OperationCanceledException exceptionCanceled)
                 {
+                    Console.WriteLine(exceptionCanceled.Message);
                     //message = exceptionCanceled.Message;
                     if (txg.HasStarted())
                     {
@@ -112,7 +113,7 @@ namespace AlignTag
 
                 if (annotationElements.Count > 1)
                 {
-                    // AlignAnnotationElements(annotationElements, alignType, document);
+                    AlignAnnotationElements(annotationElements, alignType, document);
                 }
 
                 Debug.WriteLine(DateTime.Now.ToString() + " - Commit align tags");

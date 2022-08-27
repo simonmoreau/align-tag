@@ -90,7 +90,14 @@ namespace AlignTag
             foreach (IndependentTag tag in tags)
             {
                 tag.LeaderEndCondition = LeaderEndCondition.Free;
+                
+#if Version2022 || Version2023
+                Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
+                tag.SetLeaderElbow(referencedElement, tag.TagHeadPosition);
+#elif Version2019 || Version2020 || Version2021
                 tag.LeaderEnd = tag.TagHeadPosition;
+#endif
+
             }
 
 
@@ -370,17 +377,22 @@ namespace AlignTag
 
         public static Element GetTaggedElement(Document doc, IndependentTag tag)
         {
+#if Version2019 || Version2020 || Version2021
+            LinkElementId linkElementId = tag.TaggedElementId;
+#elif Version2022 || Version2023
+            LinkElementId linkElementId = tag.GetTaggedElementIds().FirstOrDefault();
+#endif
             Element taggedElement;
-            if (tag.TaggedElementId.HostElementId == ElementId.InvalidElementId)
+            if (linkElementId.HostElementId == ElementId.InvalidElementId)
             {
-                RevitLinkInstance linkInstance = doc.GetElement(tag.TaggedElementId.LinkInstanceId) as RevitLinkInstance;
+                RevitLinkInstance linkInstance = doc.GetElement(linkElementId.LinkInstanceId) as RevitLinkInstance;
                 Document linkedDocument = linkInstance.GetLinkDocument();
 
-                taggedElement = linkedDocument.GetElement(tag.TaggedElementId.LinkedElementId);
+                taggedElement = linkedDocument.GetElement(linkElementId.LinkedElementId);
             }
             else
             {
-                taggedElement = doc.GetElement(tag.TaggedElementId.HostElementId);
+                taggedElement = doc.GetElement(linkElementId.HostElementId);
             }
 
             return taggedElement;
@@ -425,7 +437,14 @@ namespace AlignTag
 
 
             _tag.TagHeadPosition = _currentView.CropBox.Transform.OfPoint(_headOffset + _tagCenter + offsetFromView);
-            _tag.LeaderElbow = _currentView.CropBox.Transform.OfPoint(_elbowPosition);
+#if Version2022 || Version2023
+            Reference referencedElement = _tag.GetTaggedReferences().FirstOrDefault();
+            _tag.SetLeaderElbow(referencedElement, _currentView.CropBox.Transform.OfPoint(_elbowPosition));
+
+#elif Version2019 || Version2020 || Version2021
+             _tag.LeaderElbow = _currentView.CropBox.Transform.OfPoint(_elbowPosition);
+#endif
+
         }
     }
 
