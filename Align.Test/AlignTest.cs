@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Align.Test
             string versionName = uiApplication.Application.VersionName.Replace("Autodesk Revit ", "");
 
             string path = $"G:\\My Drive\\05 - Travail\\Revit Dev\\AlignTag\\Test Models\\AlignTestModel_{versionName}.rvt";
-            UIDocument uIDocument= uiApplication.OpenAndActivateDocument(path);
+            UIDocument uIDocument = uiApplication.OpenAndActivateDocument(path);
             document = uIDocument.Document;
             Console.WriteLine($"Run 'SetUp' in {GetType().Name}");
             Console.WriteLine($"Open the AlignTestModel_{versionName} model.");
@@ -202,7 +202,7 @@ namespace Align.Test
 
             using (TransactionGroup txg = new TransactionGroup(document))
             {
-                align.AlignTag(alignType,txg,selectedIds, document);
+                align.AlignTag(alignType, txg, selectedIds, document);
             }
         }
     }
