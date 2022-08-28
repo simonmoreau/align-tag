@@ -19,8 +19,6 @@ Global
 		2022Release|Any CPU = 2022Release|Any CPU
 		2023Debug|Any CPU = 2023Debug|Any CPU
 		2023Release|Any CPU = 2023Release|Any CPU
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.2019Debug|Any CPU.ActiveCfg = 2019Debug|Any CPU
@@ -43,10 +41,6 @@ Global
 		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.2023Debug|Any CPU.Build.0 = 2023Debug|Any CPU
 		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.2023Release|Any CPU.ActiveCfg = 2023Release|Any CPU
 		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.2023Release|Any CPU.Build.0 = 2023Release|Any CPU
-		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.Debug|Any CPU.ActiveCfg = 2023Debug|Any CPU
-		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.Debug|Any CPU.Build.0 = 2023Debug|Any CPU
-		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.Release|Any CPU.ActiveCfg = 2023Release|Any CPU
-		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}.Release|Any CPU.Build.0 = 2023Release|Any CPU
 		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.2019Debug|Any CPU.ActiveCfg = 2019Debug|Any CPU
 		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.2019Debug|Any CPU.Build.0 = 2019Debug|Any CPU
 		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.2019Release|Any CPU.ActiveCfg = 2019Release|Any CPU
@@ -67,10 +61,6 @@ Global
 		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.2023Debug|Any CPU.Build.0 = 2023Debug|Any CPU
 		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.2023Release|Any CPU.ActiveCfg = 2023Release|Any CPU
 		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.2023Release|Any CPU.Build.0 = 2023Release|Any CPU
-		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.Debug|Any CPU.ActiveCfg = 2022Debug|Any CPU
-		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.Debug|Any CPU.Build.0 = 2022Debug|Any CPU
-		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.Release|Any CPU.ActiveCfg = 2022Release|Any CPU
-		{840BAA3B-473D-4F82-B42A-85F63CFF68AF}.Release|Any CPU.Build.0 = 2022Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

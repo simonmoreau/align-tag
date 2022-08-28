@@ -257,7 +257,7 @@ namespace AlignTag
                             }
 
 #elif Version2019 || Version2020 || Version2021
-                        leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+                            customLeader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
 #endif
 
                         }
