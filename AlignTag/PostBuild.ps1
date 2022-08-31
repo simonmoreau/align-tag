@@ -39,7 +39,18 @@ $addinFolder = ($env:APPDATA + "\Autodesk\REVIT\Addins\" + $revitVersion)
 CopyToFolder $revitVersion $addinFolder
 
 # Copy to release folder for building the package
-$releaseFolder = ("G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases\BIM 42 Align.bundle\Contents\" + $revitVersion + "\")
+$ReleasePath="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases"
+$releaseFolder = ($ReleasePath + "\BIM 42 Align.bundle\Contents\" + $revitVersion + "\")
 CopyToFolder $revitVersion $releaseFolder
 
 
+## Zip the package
+
+$BundleFolder = ($ReleasePath + "\BIM 42 Align.bundle")
+
+$ReleaseZip = ($ReleasePath + "\" + $TargetName + ".zip")
+if (Test-Path $ReleaseZip) { Remove-Item $ReleaseZip }
+
+if ( Test-Path -Path $ReleasePath ) {
+  7z a -tzip $ReleaseZip ($BundleFolder)
+}

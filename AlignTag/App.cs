@@ -156,7 +156,7 @@ namespace AlignTag
 
             FileInfo dllFileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
 
-            string helpFilePath = Path.Combine(dllFileInfo.Directory.Parent.FullName, "help.htm");
+            string helpFilePath = Path.Combine(dllFileInfo.Directory.Parent.Parent.FullName, "help.htm");
 
             FileInfo helpFileInfo = new FileInfo(helpFilePath);
             if (helpFileInfo.Exists)
