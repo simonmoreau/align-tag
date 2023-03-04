@@ -15,6 +15,28 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2024Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\2024Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;Version2024</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit Preview Release\Revit.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2024Release|AnyCPU' ">
+    <OutputPath>bin\2024Release\</OutputPath>
+    <DefineConstants>TRACE;Version2024</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit Preview Release\Revit.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2023Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\2023Debug\</OutputPath>
@@ -126,6 +148,15 @@
     <StartAction>Program</StartAction>
   </PropertyGroup>
   <ItemGroup>
+      <!-- 2024 -->
+    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
+      <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
+      <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
       <!-- 2023 -->
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2023Debug' OR '$(Configuration)' == '2023Release'">
       <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2023\RevitAPI.dll</HintPath>

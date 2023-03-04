@@ -19,8 +19,8 @@ function CopyToFolder($revitVersion, $addinFolder) {
             if (Test-Path ($addinFolder  + "\" + $TargetName + ".addin")) { Remove-Item ($addinFolder  + "\" + $TargetName + ".addin") }
             if (Test-Path ($addinFolder  + "\" + $TargetName)) { Remove-Item ($addinFolder  + "\" + $TargetName) -Recurse }
             
-            # create the bimsync folder
-            New-Item -ItemType Directory -Path ($addinFolder  + "\" + $TargetName)
+            # create the folder
+            New-Item -ItemType Directory -Path ($addinFolder  + "\" + $TargetName) -Force
 
             # Copy the addin file
             xcopy /Y ($ProjectDir + $TargetName + ".addin") ($addinFolder)

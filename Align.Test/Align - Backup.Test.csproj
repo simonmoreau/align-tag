@@ -5,10 +5,10 @@
 
     <IsPackable>false</IsPackable>
 
-    <Configurations>2022Debug;2022Release;2021Debug;2020Debug;2019Debug;2023Debug;2023Release;2021Release;2020Release;2019Release;2024Debug;2024Release</Configurations>
+    <Configurations>2022Debug;2022Release;2021Debug;2020Debug;2019Debug;2023Debug;2023Release;2021Release;2020Release;2019Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <!-- 2024 -->
+        <!-- 2024 -->
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
       <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -17,7 +17,7 @@
       <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <!-- 2023 -->
+      <!-- 2023 -->
     <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2023Debug' OR '$(Configuration)' == '2023Release'">
       <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
       <Private>False</Private>

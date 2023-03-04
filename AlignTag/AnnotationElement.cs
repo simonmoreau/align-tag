@@ -152,7 +152,7 @@ namespace AlignTag
                 {
                     if (tag.LeaderEndCondition == LeaderEndCondition.Free)
                     {
-#if Version2022 || Version2023
+#if Version2022 || Version2023 || Version2024
                         Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                         if (referencedElement != null) LeaderEnd = tag.GetLeaderEnd(referencedElement);
 #elif Version2019 || Version2020 || Version2021
@@ -244,7 +244,7 @@ namespace AlignTag
                         CustomLeader customLeader = new CustomLeader();
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-#if Version2022 || Version2023
+#if Version2022 || Version2023 || Version2024
                             Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                             if (referencedElement != null)
                             {
@@ -266,7 +266,7 @@ namespace AlignTag
 
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-#if Version2022 || Version2023
+#if Version2022 || Version2023 || Version2024
                             Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                             if (referencedElement != null)
                             {
