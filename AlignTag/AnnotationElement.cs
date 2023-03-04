@@ -307,20 +307,43 @@ namespace AlignTag
                     }
                     else if (Parent.GetType().IsSubclassOf(typeof(SpatialElementTag)))
                     {
-                        SpatialElementTag tag = Parent as SpatialElementTag;
+                        SpatialElementTag spatialElementTag = Parent as SpatialElementTag;
 
-                        CustomLeader leader = new CustomLeader();
-                        if (tag.HasLeader)
+                        CustomLeader leader = null;
+                        if (spatialElementTag.HasLeader)
                         {
-                            leader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
+                            leader = new CustomLeader(spatialElementTag.LeaderEnd, new XYZ(0, 0, 0));
                         }
 
                         Parent.Location.Move(_ownerView.CropBox.Transform.OfVector(displacementVector));
 
-                        if (tag.HasLeader)
+                        if (!spatialElementTag.IsOrphaned && !spatialElementTag.HasLeader)
                         {
-                            tag.LeaderEnd = leader.End;
+                            RoomTag roomTag = spatialElementTag as RoomTag;
+                            if (roomTag !=  null && !roomTag.Room.IsPointInRoom(roomTag.TagHeadPosition))
+                            {
+                                spatialElementTag.HasLeader = true;
+                            }
+
+                            SpaceTag spaceTag = spatialElementTag as SpaceTag;
+                            if (spaceTag != null && !spaceTag.Space.IsPointInSpace(spaceTag.TagHeadPosition))
+                            {
+                                spatialElementTag.HasLeader = true;
+                            }
+
+                            AreaTag areaTag = spatialElementTag as AreaTag;
+                            if (areaTag != null)
+                            {
+                                areaTag.HasLeader = true;
+                            }
                         }
+
+                        if (leader != null)
+                        {
+                            spatialElementTag.LeaderEnd = leader.End;
+                        }
+
+
                     }
                     else
                     {
