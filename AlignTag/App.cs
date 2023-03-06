@@ -41,7 +41,8 @@ namespace AlignTag
             string DllPath = Assembly.GetExecutingAssembly().Location;
 
             //Create contextual help
-            ContextualHelp help = CreateContextualHelp("AlignHelp.chm");
+            string helpPath = "https://witty-river-01a861010.2.azurestaticapps.net/Align/Align.html";
+            ContextualHelp help = new ContextualHelp(ContextualHelpType.Url, helpPath);
 
 
             //Add Align Left Button
@@ -148,35 +149,6 @@ namespace AlignTag
                     return icoDecoder.Frames[0];
                 default:
                     return null;
-            }
-        }
-
-        private static ContextualHelp CreateContextualHelp(string helpFile)
-        {
-
-            FileInfo dllFileInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
-
-            string helpFilePath = Path.Combine(dllFileInfo.Directory.Parent.Parent.FullName, "help.htm");
-
-            FileInfo helpFileInfo = new FileInfo(helpFilePath);
-            if (helpFileInfo.Exists)
-            {
-                return new ContextualHelp(ContextualHelpType.Url, helpFilePath);
-            }
-            else
-            {
-                string dirPath = dllFileInfo.Directory.FullName;
-                //Get the english documentation
-                string HelpName = helpFile;
-
-                string HelpPath = Path.Combine(dirPath, HelpName);
-
-                //if the help file does not exist, extract it in the HelpDirectory
-                //Extract the english documentation
-
-                Tools.ExtractRessource("AlignTag.Resources.AlignHelp.chm", HelpPath);
-
-                return new ContextualHelp(ContextualHelpType.ChmFile, HelpPath);
             }
         }
     }
