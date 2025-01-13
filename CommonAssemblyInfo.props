@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <Company>BIM42</Company>
+    <Copyright>BIM42 2025</Copyright>
+    <Description>The Align Revit plugin</Description>
+    <Product>Align</Product>
+    <FileVersion>1.26.0.0</FileVersion>
+    <FileVersion>1.26.0.0</FileVersion>
+    <FileVersion>1.26.0.0</FileVersion>
+  </PropertyGroup>
+</Project>
