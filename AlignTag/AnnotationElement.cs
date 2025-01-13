@@ -152,10 +152,10 @@ namespace AlignTag
                 {
                     if (tag.LeaderEndCondition == LeaderEndCondition.Free)
                     {
-#if Version2022 || Version2023 || Version2024
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                         Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                         if (referencedElement != null) LeaderEnd = tag.GetLeaderEnd(referencedElement);
-#elif Version2019 || Version2020 || Version2021
+#elif REVIT2019 || REVIT2020 || REVIT2021
                         LeaderEnd = tag.LeaderEnd;
 #endif
                     }
@@ -244,7 +244,7 @@ namespace AlignTag
                         CustomLeader customLeader = new CustomLeader();
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-#if Version2022 || Version2023 || Version2024
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                             Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                             if (referencedElement != null)
                             {
@@ -256,7 +256,7 @@ namespace AlignTag
                                 customLeader = new CustomLeader(new XYZ(0, 0, 0), new XYZ(0, 0, 0));
                             }
 
-#elif Version2019 || Version2020 || Version2021
+#elif REVIT2019 || REVIT2020 || REVIT2021
                             customLeader = new CustomLeader(tag.LeaderEnd, new XYZ(0, 0, 0));
 #endif
 
@@ -266,14 +266,14 @@ namespace AlignTag
 
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-#if Version2022 || Version2023 || Version2024
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                             Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                             if (referencedElement != null)
                             {
                                 tag.SetLeaderEnd(referencedElement, customLeader.End);
                             }
 
-#elif Version2019 || Version2020 || Version2021
+#elif REVIT2019 || REVIT2020 || REVIT2021
                             tag.LeaderEnd = customLeader.End;
 #endif
 

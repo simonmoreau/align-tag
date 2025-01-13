@@ -91,10 +91,10 @@ namespace AlignTag
             {
                 tag.LeaderEndCondition = LeaderEndCondition.Free;
                 
-#if Version2022 || Version2023 || Version2024
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
                 Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                 tag.SetLeaderElbow(referencedElement, tag.TagHeadPosition);
-#elif Version2019 || Version2020 || Version2021
+#elif REVIT2019 || REVIT2020 || REVIT2021
                 tag.LeaderEnd = tag.TagHeadPosition;
 #endif
 
@@ -377,9 +377,9 @@ namespace AlignTag
 
         public static Element GetTaggedElement(Document doc, IndependentTag tag)
         {
-#if Version2019 || Version2020 || Version2021
+#if REVIT2019 || REVIT2020 || REVIT2021
             LinkElementId linkElementId = tag.TaggedElementId;
-#elif Version2022 || Version2023 || Version2024
+#elif REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
             LinkElementId linkElementId = tag.GetTaggedElementIds().FirstOrDefault();
 #endif
             Element taggedElement;
@@ -437,11 +437,11 @@ namespace AlignTag
 
 
             _tag.TagHeadPosition = _currentView.CropBox.Transform.OfPoint(_headOffset + _tagCenter + offsetFromView);
-#if Version2022 || Version2023 || Version2024
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
             Reference referencedElement = _tag.GetTaggedReferences().FirstOrDefault();
             _tag.SetLeaderElbow(referencedElement, _currentView.CropBox.Transform.OfPoint(_elbowPosition));
 
-#elif Version2019 || Version2020 || Version2021
+#elif REVIT2019 || REVIT2020 || REVIT2021
              _tag.LeaderElbow = _currentView.CropBox.Transform.OfPoint(_elbowPosition);
 #endif
 
