@@ -1,4 +1,4 @@
-﻿param ($RevitVersion, $TargetName, $ProjectDir, $TargetPath, $TargetDir)
+﻿param ($RevitVersion, $TargetName, $ProjectDir, $TargetPath, $TargetDir, $Configuration)
 write-host $RevitVersion
 write-host $TargetName
 write-host $ProjectDir
@@ -57,26 +57,15 @@ function SignFiles($TargetDir) {
       -v $filePaths
 }
 
-SignFiles $TargetDir
 
-# Copy to Addin folder for debug
-$addinFolder = ($env:APPDATA + "\Autodesk\REVIT\Addins\" + $RevitVersion)
-CopyToFolder $RevitVersion $addinFolder
+if ($Configuration -eq "Debug") {
 
-# Copy to release folder for building the package
-$ReleasePath="G:\My Drive\05 - Travail\Revit Dev\AlignTag\Releases"
-$releaseFolder = ($ReleasePath + "\BIM 42 Align.bundle\Contents\" + $revitVersion + "\")
-CopyToFolder $revitVersion $releaseFolder
+    SignFiles $TargetDir
 
-Write-Host "Files copied to :" $releaseFolder " and " $addinFolder
-
-## Zip the package
-
-$BundleFolder = ($ReleasePath + "\BIM 42 Align.bundle")
-
-$ReleaseZip = ($ReleasePath + "\" + $TargetName + ".zip")
-if (Test-Path $ReleaseZip) { Remove-Item $ReleaseZip }
-
-if ( Test-Path -Path $ReleasePath ) {
-  7z a -tzip $ReleaseZip ($BundleFolder)
+    # Copy to Addin folder for debug
+    $addinFolder = ($env:APPDATA + "\Autodesk\REVIT\Addins\" + $RevitVersion)
+    CopyToFolder $RevitVersion $addinFolder
 }
+
+
+
