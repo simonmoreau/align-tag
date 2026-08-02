@@ -1,75 +1,84 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+
+  <Import Project=".\..\CommonAssemblyInfo.props" />
+
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
-
-    <IsPackable>false</IsPackable>
-
-    <Configurations>2022Debug;2022Release;2021Debug;2020Debug;2019Debug;2023Debug;2023Release;2021Release;2020Release;2019Release;2024Debug;2024Release</Configurations>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <OutputType>Library</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <!-- Create the configuration to buid various versions of Revit -->
+    <Configurations>Debug;2025;2024;2023;2022;2021;2020;2019</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>x64</Platforms>
+    <NuGetAudit>false</NuGetAudit>
+    <BuildInParallel>false</BuildInParallel>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+
+
+  <!-- If the configuration is a Revit version,
+    we use this configuration as a variable 
+    for the rest of the csproj -->
+  <PropertyGroup Condition="!$(Configuration.Contains('Debug'))">
+    <RevitVersion>$(Configuration)</RevitVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('Debug'))">
+    <!-- We can only debug just ONE addin version.
+         Instead of building all versions above,
+         we just put ONE version below and switch to 'Debug' configuration
+      -->
+    <RevitVersion>2025</RevitVersion>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2025\Revit.exe</StartProgram>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition=" '$(RevitVersion)'=='2025' ">
+      <PropertyGroup>
+        <!-- Get the Revit nuget version for the Prerelease version -->
+        <RevitNugetVersion>2025.0.0</RevitNugetVersion>
+        <TargetFramework>net8.0-windows</TargetFramework>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <RevitNugetVersion>$(RevitVersion).*</RevitNugetVersion>
+        <TargetFramework>net48</TargetFramework>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <!-- Release -->
+  <PropertyGroup Condition="!$(Configuration.Contains('Debug'))">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\$(RevitVersion)\</OutputPath>
+    <DefineConstants>REVIT$(RevitVersion)</DefineConstants>
+    <NoWarn>MSB3052</NoWarn>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+
+  <!-- Debug -->
+  <PropertyGroup Condition="$(Configuration.Contains('Debug'))">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;REVIT$(RevitVersion)</DefineConstants>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+
+
   <ItemGroup>
-    <!-- 2024 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2023 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2023Debug' OR '$(Configuration)' == '2023Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2023Debug' OR '$(Configuration)' == '2023Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2022 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2022Debug' OR '$(Configuration)' == '2022Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2022\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2022Debug' OR '$(Configuration)' == '2022Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2022\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2021 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2021Debug' OR '$(Configuration)' == '2021Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2021Debug' OR '$(Configuration)' == '2021Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2020 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2020Debug' OR '$(Configuration)' == '2020Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2020\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2020Debug' OR '$(Configuration)' == '2020Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2020\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2019 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2019Debug' OR '$(Configuration)' == '2019Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2019Debug' OR '$(Configuration)' == '2019Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
+      <!-- Get the RevitAPI.dll, RevitAPIUI.dll, AdWindows.dll and UIFramework.dll -->
+    <PackageReference Include="Revit_All_Main_Versions_API_x64" Version="$(RevitNugetVersion)" IncludeAssets="build; compile" PrivateAssets="All" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\AlignTag\AlignTag.csproj" />
   </ItemGroup>
-
 </Project>

@@ -1,246 +1,79 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project=".\..\CommonAssemblyInfo.props" />
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
-    <SchemaVersion>
-    </SchemaVersion>
-    <ProjectGuid>{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}</ProjectGuid>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AlignTag</RootNamespace>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <!-- Create the configuration to buid various versions of Revit -->
+    <Configurations>Debug;2025;2024;2023;2022;2021;2020;2019</Configurations>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>x64</Platforms>
+    <NuGetAudit>false</NuGetAudit>
+    <BuildInParallel>false</BuildInParallel>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2024Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\2024Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Version2024</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit Preview Release\Revit.exe</StartProgram>
+
+
+  <!-- If the configuration is a Revit version,
+    we use this configuration as a variable 
+    for the rest of the csproj -->
+  <PropertyGroup Condition="!$(Configuration.Contains('Debug'))">
+    <RevitVersion>$(Configuration)</RevitVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(Configuration.Contains('Debug'))">
+    <!-- We can only debug just ONE addin version.
+         Instead of building all versions above,
+         we just put ONE version below and switch to 'Debug' configuration
+      -->
+    <RevitVersion>2025</RevitVersion>
     <StartAction>Program</StartAction>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2025\Revit.exe</StartProgram>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2024Release|AnyCPU' ">
-    <OutputPath>bin\2024Release\</OutputPath>
-    <DefineConstants>TRACE;Version2024</DefineConstants>
+
+  <Choose>
+    <When Condition=" '$(RevitVersion)'=='2025' ">
+      <PropertyGroup>
+        <!-- Get the Revit nuget version for the Prerelease version -->
+        <RevitNugetVersion>2025.0.0</RevitNugetVersion>
+        <TargetFramework>net8.0-windows</TargetFramework>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <RevitNugetVersion>$(RevitVersion).*</RevitNugetVersion>
+        <TargetFramework>net48</TargetFramework>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <!-- Release -->
+  <PropertyGroup Condition="!$(Configuration.Contains('Debug'))">
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit Preview Release\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
+    <OutputPath>bin\$(RevitVersion)\</OutputPath>
+    <DefineConstants>REVIT$(RevitVersion)</DefineConstants>
+    <NoWarn>MSB3052</NoWarn>
+    <DebugType>None</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2023Debug|AnyCPU' ">
+
+  <!-- Debug -->
+  <PropertyGroup Condition="$(Configuration.Contains('Debug'))">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\2023Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Version2023</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2023\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;REVIT$(RevitVersion)</DefineConstants>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2023Release|AnyCPU' ">
-    <OutputPath>bin\2023Release\</OutputPath>
-    <DefineConstants>TRACE;Version2023</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2023\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2022Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\2022Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Version2022</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2022\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '2022Release|AnyCPU' ">
-    <OutputPath>bin\2022Release\</OutputPath>
-    <DefineConstants>TRACE;Version2022</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2022\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '2021Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\2021Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Version2021</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2021\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '2021Release|AnyCPU'">
-    <OutputPath>bin\2021Release\</OutputPath>
-    <DefineConstants>TRACE;Version2021</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2021\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '2020Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\2020Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Version2020</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2020\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '2020Release|AnyCPU'">
-    <OutputPath>bin\2020Release\</OutputPath>
-    <DefineConstants>TRACE;Version2020</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2020\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '2019Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\2019Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;Version2019</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2019\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '2019Release|AnyCPU'">
-    <OutputPath>bin\2019Release\</OutputPath>
-    <DefineConstants>TRACE;Version2019</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <StartProgram>$(PROGRAMFILES)\Autodesk\Revit 2019\Revit.exe</StartProgram>
-    <StartAction>Program</StartAction>
-  </PropertyGroup>
+
   <ItemGroup>
-    <!-- 2024 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2024Debug' OR '$(Configuration)' == '2024Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit Preview Release\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2023 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2023Debug' OR '$(Configuration)' == '2023Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2023Debug' OR '$(Configuration)' == '2023Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2022 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2022Debug' OR '$(Configuration)' == '2022Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2022\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2022Debug' OR '$(Configuration)' == '2022Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2022\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2021 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2021Debug' OR '$(Configuration)' == '2021Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2021Debug' OR '$(Configuration)' == '2021Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2020 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2020Debug' OR '$(Configuration)' == '2020Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2020\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2020Debug' OR '$(Configuration)' == '2020Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2020\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <!-- 2019 -->
-    <Reference Include="RevitAPI" Condition="'$(Configuration)' == '2019Debug' OR '$(Configuration)' == '2019Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI" Condition="'$(Configuration)' == '2019Debug' OR '$(Configuration)' == '2019Release'">
-      <HintPath>$(PROGRAMFILES)\Autodesk\Revit 2019\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <!-- Get the RevitAPI.dll, RevitAPIUI.dll, AdWindows.dll and UIFramework.dll -->
+    <PackageReference Include="Revit_All_Main_Versions_API_x64" Version="$(RevitNugetVersion)" IncludeAssets="build; compile" PrivateAssets="All" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Align.cs" />
-    <Compile Include="AlignExecute.cs" />
-    <Compile Include="AnnotationElement.cs" />
-    <Compile Include="App.cs" />
-    <Compile Include="Arrange.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Tools.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="AlignTag.addin" />
-    <None Include="PostBuild.ps1" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
+
+
   <ItemGroup>
     <EmbeddedResource Include="Resources\align-bottom-large.png" />
     <EmbeddedResource Include="Resources\align-bottom-small.png" />
@@ -268,12 +101,16 @@
     <EmbeddedResource Include="Resources\untangle-vertically-large.png" />
     <EmbeddedResource Include="Resources\untangle-vertically-small.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Remove="Properties\Resources.Designer (1).cs" />
+  </ItemGroup>
+  
   <Target Name="AfterClean">
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.addin" />
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2016\AlignTag.dll" />
   </Target>
-  <PropertyGroup>
-    <PostBuildEvent>powershell -ExecutionPolicy Unrestricted $(ProjectDir)PostBuild.ps1 -Configuration $(Configuration) -TargetName $(TargetName) -ProjectDir $(ProjectDir) -TargetPath $(TargetPath) -TargetDir $(TargetDir)</PostBuildEvent>
-  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell -ExecutionPolicy Unrestricted $(ProjectDir)PostBuild.ps1 -RevitVersion $(RevitVersion) -TargetName $(TargetName) -ProjectDir $(ProjectDir) -TargetPath $(TargetPath) -TargetDir $(TargetDir)" />
+  </Target>
 </Project>
