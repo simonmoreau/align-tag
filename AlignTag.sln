@@ -1,11 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32421.90
+# Visual Studio Version 18
+VisualStudioVersion = 18.8.12023.21 stable
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlignTag", "AlignTag\AlignTag.csproj", "{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlignTag", "src\AlignTag\AlignTag.csproj", "{AB14DB7D-855A-4952-8BD5-752DDDD05D7E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Align.Test", "Align.Test\Align.Test.csproj", "{840BAA3B-473D-4F82-B42A-85F63CFF68AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Align.Test", "test\Align.Test\Align.Test.csproj", "{840BAA3B-473D-4F82-B42A-85F63CFF68AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{92E29D87-E4AB-4E98-94D0-8402F5775DA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9BFF4C92-F6D8-4F09-8992-E436CC019041}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CDF685BE-A4C6-4E07-85D5-E4AE85FA3181}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		CommonAssemblyInfo.props = CommonAssemblyInfo.props
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +66,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AB14DB7D-855A-4952-8BD5-752DDDD05D7E} = {92E29D87-E4AB-4E98-94D0-8402F5775DA3}
+		{840BAA3B-473D-4F82-B42A-85F63CFF68AF} = {9BFF4C92-F6D8-4F09-8992-E436CC019041}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEE85557-E92A-4887-8A3E-9C7E02DC9C66}

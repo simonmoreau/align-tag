@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 
-  <Import Project=".\..\CommonAssemblyInfo.props" />
+  <Import Project=".\..\..\CommonAssemblyInfo.props" />
 
   <PropertyGroup>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
@@ -79,6 +79,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AlignTag\AlignTag.csproj" />
+    <ProjectReference Include="..\..\src\AlignTag\AlignTag.csproj" />
   </ItemGroup>
 </Project>
