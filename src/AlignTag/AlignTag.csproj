@@ -30,22 +30,24 @@
          Instead of building all versions above,
          we just put ONE version below and switch to 'Debug' configuration
       -->
-    <RevitVersion>2025</RevitVersion>
+    <RevitVersion>2026</RevitVersion>
     <StartAction>Program</StartAction>
-    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2025\Revit.exe</StartProgram>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2026\Revit.exe</StartProgram>
   </PropertyGroup>
 
   <Choose>
-    <When Condition=" '$(RevitVersion)'=='2025' ">
+    <When Condition=" '$(RevitVersion)'=='2027'">
       <PropertyGroup>
-        <!-- Get the Revit nuget version for the Prerelease version -->
-        <RevitNugetVersion>2025.0.0</RevitNugetVersion>
+        <TargetFramework>net10.0-windows</TargetFramework>
+      </PropertyGroup>
+    </When>
+    <When Condition=" ('$(RevitVersion)'=='2025'  Or '$(RevitVersion)'=='2026')">
+      <PropertyGroup>
         <TargetFramework>net8.0-windows</TargetFramework>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
-        <RevitNugetVersion>$(RevitVersion).*</RevitNugetVersion>
         <TargetFramework>net48</TargetFramework>
       </PropertyGroup>
     </Otherwise>
@@ -66,6 +68,10 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;REVIT$(RevitVersion)</DefineConstants>
     <DebugType>Full</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RevitNugetVersion>$(RevitVersion).*</RevitNugetVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -104,9 +110,9 @@
   <ItemGroup>
     <Compile Remove="Properties\Resources.Designer (1).cs" />
   </ItemGroup>
-  
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Message Text="### AfterBuild ###" Importance="high" />
-		<Exec Command="powershell -ExecutionPolicy Unrestricted $(ProjectDir)PostBuild.ps1 -RevitVersion $(RevitVersion) -TargetName $(TargetName) -ProjectDir $(ProjectDir) -TargetPath $(TargetPath) -TargetDir $(TargetDir) -Configuration $(Configuration)" />
-	</Target>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Message Text="### AfterBuild ###" Importance="high" />
+    <Exec Command="powershell -ExecutionPolicy Unrestricted $(ProjectDir)PostBuild.ps1 -RevitVersion $(RevitVersion) -TargetName $(TargetName) -ProjectDir $(ProjectDir) -TargetPath $(TargetPath) -TargetDir $(TargetDir) -Configuration $(Configuration)" />
+  </Target>
 </Project>

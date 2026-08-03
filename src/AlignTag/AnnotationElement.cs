@@ -152,7 +152,7 @@ namespace AlignTag
                 {
                     if (tag.LeaderEndCondition == LeaderEndCondition.Free)
                     {
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026 || REVIT2027
                         Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                         if (referencedElement != null) LeaderEnd = tag.GetLeaderEnd(referencedElement);
 #elif REVIT2019 || REVIT2020 || REVIT2021
@@ -244,7 +244,7 @@ namespace AlignTag
                         CustomLeader customLeader = new CustomLeader();
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026 || REVIT2027
                             Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                             if (referencedElement != null)
                             {
@@ -266,7 +266,7 @@ namespace AlignTag
 
                         if (tag.HasLeader && tag.LeaderEndCondition == LeaderEndCondition.Free)
                         {
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026 || REVIT2027
                             Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                             if (referencedElement != null)
                             {

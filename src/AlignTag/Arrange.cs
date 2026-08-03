@@ -90,8 +90,8 @@ namespace AlignTag
             foreach (IndependentTag tag in tags)
             {
                 tag.LeaderEndCondition = LeaderEndCondition.Free;
-                
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026 || REVIT2027
                 Reference referencedElement = tag.GetTaggedReferences().FirstOrDefault();
                 tag.SetLeaderElbow(referencedElement, tag.TagHeadPosition);
 #elif REVIT2019 || REVIT2020 || REVIT2021
@@ -176,10 +176,7 @@ namespace AlignTag
                 {
                     if (tag != otherTag)
                     {
-                        if (tag.BaseLine.Intersect(otherTag.BaseLine) == SetComparisonResult.Overlap
-                            || tag.BaseLine.Intersect(otherTag.EndLine) == SetComparisonResult.Overlap
-                            || tag.EndLine.Intersect(otherTag.BaseLine) == SetComparisonResult.Overlap
-                            || tag.EndLine.Intersect(otherTag.EndLine) == SetComparisonResult.Overlap)
+                        if (AreTagLeadersIntersect(tag, otherTag))
                         {
                             XYZ newPosition = tag.TagCenter;
                             tag.TagCenter = otherTag.TagCenter;
@@ -188,6 +185,22 @@ namespace AlignTag
                     }
                 }
             }
+        }
+
+        private bool AreTagLeadersIntersect(TagLeader tag, TagLeader otherTag)
+        {
+#if REVIT2019 || REVIT2020 || REVIT2021 || REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+            return tag.BaseLine.Intersect(otherTag.BaseLine) == SetComparisonResult.Overlap
+                                        || tag.BaseLine.Intersect(otherTag.EndLine) == SetComparisonResult.Overlap
+                                        || tag.EndLine.Intersect(otherTag.BaseLine) == SetComparisonResult.Overlap
+                                        || tag.EndLine.Intersect(otherTag.EndLine) == SetComparisonResult.Overlap;
+#elif REVIT2026 || REVIT2027 
+            return tag.BaseLine.Intersect(otherTag.BaseLine, CurveIntersectResultOption.Simple ).Result == SetComparisonResult.Overlap
+                                        || tag.BaseLine.Intersect(otherTag.EndLine, CurveIntersectResultOption.Simple ).Result == SetComparisonResult.Overlap
+                                        || tag.EndLine.Intersect(otherTag.BaseLine, CurveIntersectResultOption.Simple ).Result == SetComparisonResult.Overlap
+                                        || tag.EndLine.Intersect(otherTag.EndLine, CurveIntersectResultOption.Simple ).Result == SetComparisonResult.Overlap;
+#endif
+
         }
 
         private XYZ FindNearestPoint(List<XYZ> points, XYZ basePoint)
@@ -379,7 +392,7 @@ namespace AlignTag
         {
 #if REVIT2019 || REVIT2020 || REVIT2021
             LinkElementId linkElementId = tag.TaggedElementId;
-#elif REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#elif REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026 || REVIT2027
             LinkElementId linkElementId = tag.GetTaggedElementIds().FirstOrDefault();
 #endif
             Element taggedElement;
@@ -437,7 +450,7 @@ namespace AlignTag
 
 
             _tag.TagHeadPosition = _currentView.CropBox.Transform.OfPoint(_headOffset + _tagCenter + offsetFromView);
-#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025
+#if REVIT2022 || REVIT2023 || REVIT2024 || REVIT2025 || REVIT2026 || REVIT2027
             Reference referencedElement = _tag.GetTaggedReferences().FirstOrDefault();
             _tag.SetLeaderElbow(referencedElement, _currentView.CropBox.Transform.OfPoint(_elbowPosition));
 
