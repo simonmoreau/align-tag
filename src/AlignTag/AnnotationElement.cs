@@ -161,8 +161,8 @@ namespace AlignTag
                     }
                     else
                     {
-                        Element taggedElement = TagLeader.GetTaggedElement(_doc, tag);
-                        LeaderEnd = TagLeader.GetLeaderEnd(taggedElement, _ownerView);
+                        Element taggedElement = TagWrapper.GetTaggedElement(_doc, tag);
+                        LeaderEnd = TagWrapper.GetLeaderEnd(taggedElement, _ownerView);
                     }
                 }
             }
