@@ -12,6 +12,8 @@
 Files/
 
 # Build results
+[Oo]utputDirectory
+[Bb]IM 42 Align.bundle
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

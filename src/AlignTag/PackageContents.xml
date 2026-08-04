@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ApplicationPackage SchemaVersion="1.0" AutodeskProduct="Revit" Name="Align" Description="Quickly and easily align tags for perfect drawings." AppVersion="1.6.0" FriendlyVersion="1.6.0" ProductType="Application" HelpFile="./Contents/help.htm" SupportedLocales="Enu" AppNameSpace="appstore.exchange.autodesk.com" OnlineDocumentation="www.bim42.com" Author="Simon Moreau" ProductCode="{2E17954F-9B59-40EA-9A15-DBC1DE5F213F}" UpgradeCode="{233EBAA8-102C-4CD8-AC93-22D76A2406AF}" Icon="./Contents/Resources/BIM.ico">
+<ApplicationPackage SchemaVersion="1.0" AutodeskProduct="Revit" Name="Align" Description="Quickly and easily align tags for perfect drawings." AppVersion="1.27.0" FriendlyVersion="1.27.0" ProductType="Application" HelpFile="./Contents/help.htm" SupportedLocales="Enu" AppNameSpace="appstore.exchange.autodesk.com" OnlineDocumentation="www.bim42.com" Author="Simon Moreau" ProductCode="{FBB7BE80-4CF2-430D-BB55-6E2859A60044}" UpgradeCode="{233EBAA8-102C-4CD8-AC93-22D76A2406AF}" Icon="./Contents/Resources/BIM.ico">
   <CompanyDetails Name="BIM 42" Url="www.bim42.com" Email="simon@bim42.com" Phone=" " />
-  <RuntimeRequirements OS="Win64" Platform="Revit|Revit Architecture|Revit Structure|Revit MEP" SeriesMin="R2018" SeriesMax="R2024" />
+  <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2018" SeriesMax="R2026" />
   <Components Description="2018 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2018" SeriesMax="R2018" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2019/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2019/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
   <Components Description="2019 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2019" SeriesMax="R2019" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2019/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2019/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
   <Components Description="2020 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2020" SeriesMax="R2020" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2020/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2020/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
   <Components Description="2021 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2021" SeriesMax="R2021" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2021/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2021/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
   <Components Description="2022 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2022" SeriesMax="R2022" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2022/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2022/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
   <Components Description="2023 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2023" SeriesMax="R2023" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2023/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2023/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
   <Components Description="2024 parts">
     <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2024" SeriesMax="R2024" />
-    <ComponentEntry AppName="Align" Version="1.26.0" ModuleName="./Contents/2024/AlignTag.addin" AppDescription="Align" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2024/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
+  </Components>
+  <Components Description="2025 parts">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2025" SeriesMax="R2025" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2025/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
+  </Components>
+  <Components Description="2026 parts">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2026" SeriesMax="R2026" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2026/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
+  </Components>
+  <Components Description="2027 parts">
+    <RuntimeRequirements OS="Win64" Platform="Revit" SeriesMin="R2027" SeriesMax="R2027" />
+    <ComponentEntry AppName="Align" Version="1.27.0" ModuleName="./Contents/2027/AlignTag.addin" AppDescription="Quickly and easily align elements for perfect drawings." />
   </Components>
 </ApplicationPackage>
