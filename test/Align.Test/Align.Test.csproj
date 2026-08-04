@@ -10,7 +10,7 @@
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <!-- Create the configuration to buid various versions of Revit -->
-    <Configurations>Debug;2025;2024;2023;2022;2021;2020;2019</Configurations>
+    <Configurations>Debug;2025;2024;2023;2022;2021;2020;2019;2026;2027</Configurations>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Platforms>x64</Platforms>
     <NuGetAudit>false</NuGetAudit>
